@@ -1105,9 +1105,77 @@ function buildAuthoredSubjectQuestions(subject: Subject, seeds: AuthoredQuestion
   }));
 }
 
+function examLevelQuestionText(subject: Subject, seed: AuthoredQuestionSeed, index: number): string {
+  const pattern = index % 4;
+
+  if (subject === '중개사법') {
+    if (pattern === 0) {
+      return `${seed.questionText} 단, 등록관청ㆍ개업공인중개사ㆍ소속공인중개사ㆍ중개보조원의 지위를 구별하여 판단한다.`;
+    }
+
+    if (pattern === 1) {
+      return `${seed.questionText} 법정 의무의 주체와 위반 시 제재 가능성을 함께 고려하여 고른다.`;
+    }
+
+    if (pattern === 2) {
+      return `${seed.questionText} 거래당사자 합의가 있더라도 공인중개사법상 제한이 배제되는 것은 아님에 유의한다.`;
+    }
+
+    return `${seed.questionText} 다음 선택지 중 절대적 표현 또는 다른 법령 절차가 섞인 것을 배제하여 판단한다.`;
+  }
+
+  if (subject === '공시세법') {
+    if (pattern === 0) {
+      return `${seed.questionText} 지적공부ㆍ등기기록ㆍ세무신고 절차를 서로 구별하여 판단한다.`;
+    }
+
+    if (pattern === 1) {
+      return `${seed.questionText} 과세대상ㆍ납세의무자ㆍ과세기준일 또는 등기신청 구조를 함께 고려한다.`;
+    }
+
+    if (pattern === 2) {
+      return `${seed.questionText} 토지이동, 권리변동, 보유세와 거래세의 개념이 섞여 있는 선택지를 주의한다.`;
+    }
+
+    return `${seed.questionText} 실제 시험처럼 유사 용어의 효과와 담당 기관을 구별하여 고른다.`;
+  }
+
+  return seed.questionText;
+}
+
+function buildExamLevelSubjectQuestions(subject: Subject, seeds: AuthoredQuestionSeed[]): Question[] {
+  return seeds.map((seed, index) => {
+    const elevatedDifficulty: Difficulty =
+      seed.category === 'easy' ? 'normal' : seed.category === 'trap' ? 'trap' : 'hard';
+
+    return {
+      id: `${subject}-exam-${seed.category}-${index + 1}`,
+      sourceRound: seed.sourceRound,
+      sourceYear: 1989 + seed.sourceRound,
+      subject,
+      examNumber: index + 1,
+      displayNumber: index + 1,
+      chapter: seed.chapter,
+      topic: seed.topic,
+      lawRef: seed.lawRef,
+      difficulty: elevatedDifficulty,
+      sourceType: seed.sourceType,
+      category: seed.category,
+      frequencyScore: Math.max(58, 99 - index),
+      issueScore: seed.category === 'issue' ? 92 - index : undefined,
+      trapType: seed.trapType,
+      questionText: examLevelQuestionText(subject, seed, index),
+      choices: makeAuthoredChoices(seed),
+      answer: seed.answer,
+      explanation: `${seed.explanation} 실전에서는 선택지의 주체, 절차, 효과, 예외 표현을 동시에 대조해야 합니다.`,
+      memoryNote: `${subject} ${seed.topic}: ${seed.trapType ?? '핵심 요건'}과 유사 제도 차이를 함께 복습하세요.`,
+    };
+  });
+}
+
 function buildSubjectQuestions(subject: Subject): Question[] {
   if (subject === '중개사법') {
-    return buildAuthoredSubjectQuestions(subject, brokerageSeeds);
+    return buildExamLevelSubjectQuestions(subject, brokerageSeeds);
   }
 
   if (subject === '공법') {
@@ -1115,7 +1183,7 @@ function buildSubjectQuestions(subject: Subject): Question[] {
   }
 
   if (subject === '공시세법') {
-    return buildAuthoredSubjectQuestions(subject, registryTaxSeeds);
+    return buildExamLevelSubjectQuestions(subject, registryTaxSeeds);
   }
 
   const questions: Question[] = [];
