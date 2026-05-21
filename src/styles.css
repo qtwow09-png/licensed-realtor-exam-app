@@ -312,6 +312,23 @@ button {
   line-height: 1.55;
 }
 
+.questionExampleBox {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 18px 20px;
+  border: 1px solid #cdd6e3;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #263244;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.questionExampleBox p {
+  margin: 0;
+}
+
 .lawRef {
   margin: 14px 0 0;
   color: #647084;
