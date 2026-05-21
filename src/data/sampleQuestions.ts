@@ -40,6 +40,11 @@ type AuthoredQuestionSeed = {
   trapType?: string;
 };
 
+type OfficialQuestionOverride = {
+  index: number;
+  seed: AuthoredQuestionSeed;
+};
+
 const categoryPlan: CategoryMeta[] = [
   { category: 'recent_frequent', label: '최근 빈출', count: 16, difficulty: 'normal', sourceType: 'modified', sourceRound: 36 },
   { category: 'past', label: '과거 기출', count: 8, difficulty: 'normal', sourceType: 'original', sourceRound: 28 },
@@ -65,6 +70,91 @@ const lawRefs: Record<Subject, string> = {
   공법: '국토계획법, 건축법 등',
   공시세법: '공간정보관리법, 부동산등기법, 지방세법',
 };
+
+const officialBrokerageOverrides: OfficialQuestionOverride[] = [
+  {
+    index: 0,
+    seed: { chapter: '부동산거래신고', topic: '거래신고 30일', lawRef: '부동산 거래신고 등에 관한 법률 제3조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '개업공인중개사가 매매계약을 중개하여 거래계약서를 작성ㆍ교부한 경우 부동산 거래신고 기한으로 옳은 것은?', correctChoice: '거래계약 체결일부터 30일 이내에 신고해야 한다.', distractors: ['거래계약 체결일부터 7일 이내에 신고해야 한다.', '잔금 지급일부터 60일 이내에만 신고하면 된다.', '소유권이전등기 접수일부터 2개월 이내에 신고한다.', '거래계약서를 보존하는 5년 안에만 신고하면 된다.'], answer: 1, explanation: '부동산 매매계약의 거래신고는 계약 체결일부터 30일 이내가 핵심입니다.', trapType: '30일 신고기한' },
+  },
+  {
+    index: 1,
+    seed: { chapter: '중개대상물 확인설명', topic: '확인설명서 보존 3년', lawRef: '공인중개사법 제25조 및 시행령 제21조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '중개대상물 확인ㆍ설명서 사본 보존기간에 관한 설명으로 옳은 것은?', correctChoice: '개업공인중개사는 확인ㆍ설명서 사본을 3년간 보존해야 한다.', distractors: ['확인ㆍ설명서 사본은 30일만 보존하면 된다.', '확인ㆍ설명서 사본은 1년간만 보존하면 된다.', '확인ㆍ설명서 사본은 거래계약서와 같이 5년간 보존해야 한다.', '거래당사자가 서명하면 보존의무는 없다.'], answer: 2, explanation: '확인ㆍ설명서 사본은 3년, 거래계약서는 5년으로 구별해야 합니다.', trapType: '3년ㆍ5년 구별' },
+  },
+  {
+    index: 2,
+    seed: { chapter: '거래계약서', topic: '거래계약서 보존 5년', lawRef: '공인중개사법 제26조 및 시행령 제22조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '개업공인중개사가 중개가 완성되어 거래계약서를 작성한 경우 거래계약서 보존기간으로 옳은 것은?', correctChoice: '거래계약서 원본ㆍ사본 또는 전자문서를 5년간 보존해야 한다.', distractors: ['거래계약서는 작성일부터 30일만 보존하면 된다.', '거래계약서는 확인ㆍ설명서와 같이 3년만 보존하면 된다.', '거래계약서는 등기 완료 즉시 폐기해야 한다.', '거래당사자가 원하면 보존기간은 10일로 단축된다.'], answer: 4, explanation: '거래계약서는 5년 보존이 핵심이며 확인ㆍ설명서 3년과 함께 출제되기 쉽습니다.', trapType: '거래계약서 5년' },
+  },
+  {
+    index: 24,
+    seed: { chapter: '손해배상책임', topic: '보증금액', lawRef: '공인중개사법 제30조 및 시행령 제24조', category: 'issue', difficulty: 'hard', sourceType: 'predicted', sourceRound: 36, questionText: '개업공인중개사의 손해배상책임 보장금액에 관한 설명으로 옳은 것은?', correctChoice: '법인인 개업공인중개사는 2억원 이상, 분사무소를 두는 경우 분사무소마다 1억원 이상을 추가로 설정해야 한다.', distractors: ['법인과 개인은 모두 5천만원 이상이면 충분하다.', '법인은 1억원 이상이고 분사무소 추가 보증은 필요 없다.', '분사무소마다 2억원 이상을 추가해야 하며 본점 보증은 필요 없다.', '손해배상책임 보장은 업무정지 후 30일 안에만 설정하면 된다.'], answer: 1, explanation: '손해배상책임 보장은 법인 2억원 이상, 분사무소마다 1억원 이상 추가를 구별해야 합니다.', trapType: '보증금액 숫자' },
+  },
+  {
+    index: 28,
+    seed: { chapter: '지도감독과 벌칙', topic: '업무정지 6개월', lawRef: '공인중개사법 제39조', category: 'trap', difficulty: 'trap', sourceType: 'weak_review', sourceRound: 35, questionText: '개업공인중개사에 대한 업무정지 처분의 기간에 관한 설명으로 옳은 것은?', correctChoice: '등록관청은 법정 사유가 있는 경우 6개월의 범위에서 기간을 정하여 업무정지를 명할 수 있다.', distractors: ['업무정지는 언제나 30일로 고정된다.', '업무정지는 3년의 범위에서 국토교통부장관만 명할 수 있다.', '업무정지 처분은 형벌이므로 등록관청은 할 수 없다.', '업무정지를 받으면 공인중개사 자격은 예외 없이 즉시 취소된다.'], answer: 3, explanation: '업무정지는 6개월 범위의 행정처분이고 자격취소와 구별합니다.', trapType: '6개월 업무정지' },
+  },
+  {
+    index: 29,
+    seed: { chapter: '중개보조원', topic: '과태료 500만원', lawRef: '공인중개사법 제51조', category: 'trap', difficulty: 'trap', sourceType: 'weak_review', sourceRound: 35, questionText: '중개보조원 고지의무 위반과 관련한 과태료 설명으로 옳은 것은?', correctChoice: '중개보조원임을 미리 알리지 않은 사람과 그 소속 개업공인중개사는 500만원 이하의 과태료 대상이 될 수 있다.', distractors: ['해당 위반은 언제나 3년 이하의 징역형만 부과된다.', '중개보조원 고지의무 위반에는 아무 제재가 없다.', '과태료 상한은 5천만원이다.', '고지의무 위반은 부동산등기법상 등기 지연 과태료와 동일하다.'], answer: 2, explanation: '중개보조원 고지의무 위반은 500만원 이하 과태료와 연결됩니다.', trapType: '과태료 상한' },
+  },
+];
+
+const officialPublicLawOverrides: OfficialQuestionOverride[] = [
+  {
+    index: 0,
+    seed: { chapter: '국토계획법', topic: '개발행위허가 대상', lawRef: '국토계획법 제56조 및 시행령 제51조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '개발행위허가 대상에 해당할 수 있는 것을 모두 고른 것은? ㄱ. 건축물의 건축 ㄴ. 공작물의 설치 ㄷ. 토지의 형질변경 ㄹ. 토석채취 ㅁ. 토지분할 ㅂ. 물건을 쌓아놓는 행위', correctChoice: 'ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ', distractors: ['ㄱ, ㄴ, ㄷ', 'ㄱ, ㄷ, ㅁ', 'ㄴ, ㄹ, ㅂ', 'ㄱ, ㄴ, ㄷ, ㄹ'], answer: 5, explanation: '개발행위허가 유형은 건축물 건축, 공작물 설치, 토지 형질변경, 토석채취, 토지분할, 물건 적치까지 묶어 암기해야 합니다.', trapType: '개발행위 열거' },
+  },
+  {
+    index: 1,
+    seed: { chapter: '국토계획법', topic: '개발행위허가 제한기간', lawRef: '국토계획법 제63조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '개발행위허가 제한기간에 관한 설명으로 옳은 것은?', correctChoice: '일정한 경우 한 차례만 3년 이내의 기간 동안 개발행위허가를 제한할 수 있고, 사유에 따라 2년 이내 연장이 문제될 수 있다.', distractors: ['개발행위허가 제한기간은 언제나 30일이다.', '개발행위허가 제한은 제한기간 없이 영구적으로만 가능하다.', '개발행위허가 제한기간은 토지거래계약 신고기한과 같이 30일이다.', '제한기간은 시장ㆍ군수가 임의로 10년까지 정할 수 있다.'], answer: 1, explanation: '개발행위허가 제한은 3년 이내와 2년 이내 연장 구조가 핵심입니다.', trapType: '3년ㆍ2년 제한기간' },
+  },
+  {
+    index: 2,
+    seed: { chapter: '국토계획법', topic: '토지거래허가 이행강제금', lawRef: '국토계획법 제124조의2', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '토지거래계약허가 후 토지이용의무 불이행에 대한 이행강제금 설명으로 옳은 것은?', correctChoice: '이행강제금은 토지이용의무기간 범위에서 최장 5년간, 1년에 한 번씩 반복 부과될 수 있다.', distractors: ['이행강제금은 최초 1회만 부과할 수 있고 반복 부과는 불가능하다.', '이행강제금은 매월 한 번씩 30년간 부과된다.', '이행강제금은 취득세 신고기한이 지나면 자동 면제된다.', '토지거래허가를 받으면 이용의무와 이행강제금은 전혀 문제되지 않는다.'], answer: 3, explanation: '토지거래허가 후 이용의무 위반은 최장 5년, 연 1회 반복 부과 구조를 확인해야 합니다.', trapType: '5년ㆍ연 1회' },
+  },
+  {
+    index: 24,
+    seed: { chapter: '건축법', topic: '가설건축물 존치기간', lawRef: '건축법 시행령 제15조', category: 'issue', difficulty: 'hard', sourceType: 'predicted', sourceRound: 36, questionText: '신고 대상 가설건축물의 존치기간과 관련한 설명으로 가장 적절한 것은?', correctChoice: '가설건축물은 유형에 따라 통상 3년 이내 존치기간이 문제될 수 있고, 연장 또는 별도 인허가 관계를 함께 검토해야 한다.', distractors: ['가설건축물은 신고만 하면 언제나 영구 존치할 수 있다.', '가설건축물 존치기간은 부동산 거래신고 30일과 동일하다.', '가설건축물은 건축법상 도로ㆍ대지 요건과 전혀 관련이 없다.', '가설건축물 신고에는 어떤 경우에도 개발행위허가 문제가 연결될 수 없다.'], answer: 4, explanation: '가설건축물은 3년 이내 존치기간과 인허가 의제 여부가 시험 함정입니다.', trapType: '가설건축물 3년' },
+  },
+  {
+    index: 28,
+    seed: { chapter: '도시개발법', topic: '환지처분 후 등기촉탁 14일', lawRef: '도시개발법 제43조', category: 'trap', difficulty: 'trap', sourceType: 'weak_review', sourceRound: 35, questionText: '환지처분 공고 후 등기와 관련한 설명으로 옳은 것은?', correctChoice: '시행자는 환지처분이 공고되면 공고 후 14일 이내에 관할 등기소에 등기를 촉탁하거나 신청해야 한다.', distractors: ['환지처분 공고 후 30일 이내에 부동산 거래신고를 하면 등기촉탁은 필요 없다.', '환지처분 공고 후 5년 이내면 언제든지 등기하면 된다.', '환지처분이 공고되면 등기 없이도 모든 등기기록이 자동 정리된다.', '환지처분 후 등기기간은 양도소득세 예정신고기한과 동일하게 2개월이다.'], answer: 2, explanation: '도시개발법상 환지처분 공고 후 등기 촉탁ㆍ신청 14일을 다른 신고기한과 혼동하지 않아야 합니다.', trapType: '14일 등기촉탁' },
+  },
+];
+
+const officialRegistryTaxOverrides: OfficialQuestionOverride[] = [
+  {
+    index: 0,
+    seed: { chapter: '공간정보법', topic: '신규등록 60일', lawRef: '공간정보의 구축 및 관리 등에 관한 법률 제77조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '토지의 신규등록 신청기간에 관한 설명으로 옳은 것은?', correctChoice: '토지소유자는 신규등록할 토지가 있으면 사유 발생일부터 60일 이내에 지적소관청에 신청해야 한다.', distractors: ['사유 발생일부터 7일 이내에 등기소에 신청해야 한다.', '계약 체결일부터 30일 이내에 세무서에 신고해야 한다.', '양도일이 속하는 달의 말일부터 2개월 이내에 신청한다.', '소유권이전등기 후 5년 이내에만 신청하면 된다.'], answer: 1, explanation: '신규등록은 사유 발생일부터 60일 이내 지적소관청 신청입니다.', trapType: '신규등록 60일' },
+  },
+  {
+    index: 1,
+    seed: { chapter: '공간정보법', topic: '등록전환 60일', lawRef: '공간정보의 구축 및 관리 등에 관한 법률 제78조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '등록전환 신청기간에 관한 설명으로 옳은 것은?', correctChoice: '등록전환할 토지가 있으면 사유 발생일부터 60일 이내에 지적소관청에 등록전환을 신청해야 한다.', distractors: ['등록전환은 환지처분 공고 후 14일 이내 등기소에 신청한다.', '등록전환은 거래계약 체결일부터 30일 이내에 신고한다.', '등록전환은 양도소득세 확정신고 기간에만 신청한다.', '등록전환은 신청기간 제한이 전혀 없다.'], answer: 2, explanation: '신규등록ㆍ등록전환ㆍ지목변경은 60일 구조로 함께 정리해야 합니다.', trapType: '등록전환 60일' },
+  },
+  {
+    index: 2,
+    seed: { chapter: '공간정보법', topic: '지목변경 60일', lawRef: '공간정보의 구축 및 관리 등에 관한 법률 제81조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '지목변경 신청기간에 관한 설명으로 옳은 것은?', correctChoice: '지목변경할 토지가 있으면 사유 발생일부터 60일 이내에 지적소관청에 신청해야 한다.', distractors: ['지목변경은 등기 원인일부터 14일 이내에 등기소에 신청한다.', '지목변경은 계약일부터 30일 이내에 부동산 거래신고로 갈음한다.', '지목변경은 양도일이 속하는 달의 말일부터 2개월 이내 세무서에 신고한다.', '지목변경은 사유 발생일부터 3년 이내면 언제든지 가능하다.'], answer: 3, explanation: '지목변경도 사유 발생일부터 60일 이내 지적소관청 신청입니다.', trapType: '지목변경 60일' },
+  },
+  {
+    index: 16,
+    seed: { chapter: '부동산등기', topic: '소유권이전등기 60일', lawRef: '부동산등기 특별조치법 제2조', category: 'past', difficulty: 'hard', sourceType: 'original', sourceRound: 29, questionText: '부동산 소유권이전등기 신청의무 기간에 관한 설명으로 옳은 것은?', correctChoice: '대가적 채무를 서로 부담하는 계약의 경우 반대급부 이행이 완료된 날부터 60일 이내에 소유권이전등기를 신청해야 한다.', distractors: ['계약 체결일부터 무조건 7일 이내에 신청해야 한다.', '환지처분 공고일부터 14일 이내 규정만 적용된다.', '양도소득세 예정신고기한과 같아 항상 말일부터 2개월이다.', '등기신청 의무기간은 5년이다.'], answer: 1, explanation: '소유권이전등기는 반대급부 이행 완료일부터 60일 이내를 기본으로 봅니다.', trapType: '등기 60일' },
+  },
+  {
+    index: 24,
+    seed: { chapter: '양도소득세', topic: '예정신고 2개월', lawRef: '국세청 양도소득세 신고납부안내', category: 'issue', difficulty: 'hard', sourceType: 'predicted', sourceRound: 36, questionText: '토지 또는 건물 양도소득세 예정신고ㆍ납부기한으로 옳은 것은?', correctChoice: '양도일이 속하는 달의 말일부터 2개월 이내에 예정신고ㆍ납부해야 한다.', distractors: ['양도계약 체결일부터 30일 이내에 신고한다.', '반대급부 이행 완료일부터 60일 이내에 등기소에 신고한다.', '매년 6월 1일 현재 소유자가 신고한다.', '양도한 연도의 다음연도 12월 31일까지 신고한다.'], answer: 4, explanation: '부동산 양도소득세 예정신고는 양도일이 속하는 달의 말일부터 2개월 이내입니다.', trapType: '양도세 2개월' },
+  },
+  {
+    index: 25,
+    seed: { chapter: '양도소득세', topic: '확정신고 5월', lawRef: '국세청 양도소득세 신고납부안내', category: 'issue', difficulty: 'hard', sourceType: 'predicted', sourceRound: 36, questionText: '양도소득세 확정신고 기간에 관한 설명으로 옳은 것은?', correctChoice: '확정신고는 양도한 연도의 다음연도 5월 1일부터 5월 31일까지 하는 것이 원칙이다.', distractors: ['확정신고는 매년 6월 1일 하루에만 한다.', '확정신고는 계약 체결일부터 30일 이내에 한다.', '확정신고는 환지처분 공고 후 14일 이내에 한다.', '확정신고는 취득일부터 60일 이내에 한다.'], answer: 1, explanation: '양도소득세는 예정신고 2개월과 확정신고 다음연도 5월을 구별해야 합니다.', trapType: '확정신고 5월' },
+  },
+  {
+    index: 28,
+    seed: { chapter: '부동산등기', topic: '장기미등기 과징금', lawRef: '부동산 실권리자명의 등기에 관한 법률 제10조', category: 'trap', difficulty: 'trap', sourceType: 'weak_review', sourceRound: 35, questionText: '장기미등기자에 대한 과징금 설명으로 옳은 것은?', correctChoice: '소유권이전등기 신청의무가 있는 자가 일정한 날부터 3년 이내에 등기를 신청하지 않으면 부동산평가액의 30% 범위에서 과징금이 부과될 수 있다.', distractors: ['장기미등기 과징금은 부동산평가액의 3%로 고정된다.', '60일 이내 등기신청을 하지 않으면 즉시 소유권이 국가에 귀속된다.', '장기미등기 과징금은 양도소득세 예정신고와 동일한 세금이다.', '장기미등기자는 14일 이내에 환지처분 등기만 하면 된다.'], answer: 2, explanation: '장기미등기자는 3년과 부동산평가액 30% 범위 과징금이 핵심 숫자입니다.', trapType: '3년ㆍ30% 과징금' },
+  },
+  {
+    index: 29,
+    seed: { chapter: '양도소득세', topic: '무신고가산세 20%', lawRef: '국세청 양도소득세 신고납부안내', category: 'trap', difficulty: 'trap', sourceType: 'weak_review', sourceRound: 35, questionText: '부동산 양도소득세 예정신고를 하지 않은 경우 가산세 설명으로 옳은 것은?', correctChoice: '예정신고를 하지 않으면 납부할 세액의 20%인 무신고가산세가 문제될 수 있다.', distractors: ['예정신고를 하지 않아도 가산세는 전혀 없다.', '무신고가산세는 언제나 납부세액의 2%이다.', '무신고가산세는 지적소관청이 부과하는 지목변경 수수료이다.', '무신고가산세는 3년 이내 등기신청을 하지 않은 경우의 과징금과 동일하다.'], answer: 3, explanation: '양도소득세 예정신고 누락은 무신고가산세 20% 등과 연결됩니다.', trapType: '무신고가산세 20%' },
+  },
+];
 
 const brokerageSeeds: AuthoredQuestionSeed[] = [
   { chapter: '중개업 등록', topic: '개설등록', lawRef: '공인중개사법', category: 'recent_frequent', difficulty: 'normal', sourceType: 'modified', sourceRound: 36, questionText: '중개사무소 개설등록에 관한 설명으로 옳은 것은?', correctChoice: '중개업을 영위하려는 자는 등록관청에 중개사무소 개설등록을 하여야 한다.', distractors: ['등록 없이 광고만 하면 중개업을 할 수 있다.', '개설등록은 국토교통부장관에게만 신청한다.', '법인은 어떠한 경우에도 개설등록을 할 수 없다.', '개설등록 후에는 등록증 게시 의무가 없다.'], answer: 1, explanation: '중개업을 하려면 등록관청에 개설등록을 해야 합니다.', trapType: '등록 주체와 관청 혼동' },
@@ -1080,6 +1170,23 @@ function makeAuthoredChoices(seed: AuthoredQuestionSeed): [string, string, strin
   return choices.slice(0, 5) as [string, string, string, string, string];
 }
 
+function applyOfficialOverrides(
+  seeds: AuthoredQuestionSeed[],
+  overrides: OfficialQuestionOverride[],
+): AuthoredQuestionSeed[] {
+  const nextSeeds = [...seeds];
+
+  overrides.forEach(({ index, seed }) => {
+    if (index < 0 || index >= nextSeeds.length) {
+      throw new Error(`${seed.topic} 공식자료 문항 위치가 범위를 벗어났습니다.`);
+    }
+
+    nextSeeds[index] = seed;
+  });
+
+  return nextSeeds;
+}
+
 function buildAuthoredSubjectQuestions(subject: Subject, seeds: AuthoredQuestionSeed[]): Question[] {
   return seeds.map((seed, index) => ({
     id: `${subject}-${seed.category}-${index + 1}`,
@@ -1175,15 +1282,24 @@ function buildExamLevelSubjectQuestions(subject: Subject, seeds: AuthoredQuestio
 
 function buildSubjectQuestions(subject: Subject): Question[] {
   if (subject === '중개사법') {
-    return buildExamLevelSubjectQuestions(subject, brokerageSeeds);
+    return buildExamLevelSubjectQuestions(
+      subject,
+      applyOfficialOverrides(brokerageSeeds, officialBrokerageOverrides),
+    );
   }
 
   if (subject === '공법') {
-    return buildAuthoredSubjectQuestions(subject, hardPublicLawSeeds);
+    return buildAuthoredSubjectQuestions(
+      subject,
+      applyOfficialOverrides(hardPublicLawSeeds, officialPublicLawOverrides),
+    );
   }
 
   if (subject === '공시세법') {
-    return buildExamLevelSubjectQuestions(subject, registryTaxSeeds);
+    return buildExamLevelSubjectQuestions(
+      subject,
+      applyOfficialOverrides(registryTaxSeeds, officialRegistryTaxOverrides),
+    );
   }
 
   const questions: Question[] = [];
