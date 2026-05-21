@@ -85,6 +85,10 @@ const officialBrokerageOverrides: OfficialQuestionOverride[] = [
     seed: { chapter: '거래계약서', topic: '거래계약서 보존 5년', lawRef: '공인중개사법 제26조 및 시행령 제22조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '개업공인중개사가 중개가 완성되어 거래계약서를 작성한 경우 거래계약서 보존기간으로 옳은 것은?', correctChoice: '거래계약서 원본ㆍ사본 또는 전자문서를 5년간 보존해야 한다.', distractors: ['거래계약서는 작성일부터 30일만 보존하면 된다.', '거래계약서는 확인ㆍ설명서와 같이 3년만 보존하면 된다.', '거래계약서는 등기 완료 즉시 폐기해야 한다.', '거래당사자가 원하면 보존기간은 10일로 단축된다.'], answer: 4, explanation: '거래계약서는 5년 보존이 핵심이며 확인ㆍ설명서 3년과 함께 출제되기 쉽습니다.', trapType: '거래계약서 5년' },
   },
   {
+    index: 3,
+    seed: { chapter: '보수와 실비', topic: '중개보수 계산', lawRef: '공인중개사법 제32조 및 중개보수 한도 규정', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '주택 매매 거래금액이 4억원이고 해당 거래의 중개보수 상한요율이 0.4퍼센트인 경우, 부가가치세를 제외한 중개보수 상한액으로 옳은 것은?', correctChoice: '160만원', distractors: ['16만원', '120만원', '200만원', '400만원'], answer: 3, explanation: '4억원 × 0.4퍼센트 = 160만원입니다. 계산형 문제에서는 거래금액, 요율, 한도액 적용 여부를 차례로 확인해야 합니다.', trapType: '중개보수 산식 계산' },
+  },
+  {
     index: 24,
     seed: { chapter: '손해배상책임', topic: '보증금액', lawRef: '공인중개사법 제30조 및 시행령 제24조', category: 'issue', difficulty: 'hard', sourceType: 'predicted', sourceRound: 36, questionText: '개업공인중개사의 손해배상책임 보장금액에 관한 설명으로 옳은 것은?', correctChoice: '법인인 개업공인중개사는 2억원 이상, 분사무소를 두는 경우 분사무소마다 1억원 이상을 추가로 설정해야 한다.', distractors: ['법인과 개인은 모두 5천만원 이상이면 충분하다.', '법인은 1억원 이상이고 분사무소 추가 보증은 필요 없다.', '분사무소마다 2억원 이상을 추가해야 하며 본점 보증은 필요 없다.', '손해배상책임 보장은 업무정지 후 30일 안에만 설정하면 된다.'], answer: 1, explanation: '손해배상책임 보장은 법인 2억원 이상, 분사무소마다 1억원 이상 추가를 구별해야 합니다.', trapType: '보증금액 숫자' },
   },
@@ -112,6 +116,10 @@ const officialPublicLawOverrides: OfficialQuestionOverride[] = [
     seed: { chapter: '국토계획법', topic: '토지거래허가 이행강제금', lawRef: '국토계획법 제124조의2', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '토지거래계약허가 후 토지이용의무 불이행에 대한 이행강제금 설명으로 옳은 것은?', correctChoice: '이행강제금은 토지이용의무기간 범위에서 최장 5년간, 1년에 한 번씩 반복 부과될 수 있다.', distractors: ['이행강제금은 최초 1회만 부과할 수 있고 반복 부과는 불가능하다.', '이행강제금은 매월 한 번씩 30년간 부과된다.', '이행강제금은 취득세 신고기한이 지나면 자동 면제된다.', '토지거래허가를 받으면 이용의무와 이행강제금은 전혀 문제되지 않는다.'], answer: 3, explanation: '토지거래허가 후 이용의무 위반은 최장 5년, 연 1회 반복 부과 구조를 확인해야 합니다.', trapType: '5년ㆍ연 1회' },
   },
   {
+    index: 3,
+    seed: { chapter: '건축법', topic: '건폐율ㆍ용적률 계산', lawRef: '건축법 및 국토계획법상 건폐율ㆍ용적률 산정 구조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '대지면적 500제곱미터, 건축면적 250제곱미터, 연면적 1,200제곱미터인 건축물이 있다. 이 중 용적률 산정에서 제외되는 지하층 면적이 200제곱미터라면 건폐율과 용적률로 옳은 것은?', correctChoice: '건폐율 50퍼센트, 용적률 200퍼센트', distractors: ['건폐율 40퍼센트, 용적률 240퍼센트', '건폐율 50퍼센트, 용적률 240퍼센트', '건폐율 60퍼센트, 용적률 200퍼센트', '건폐율 200퍼센트, 용적률 50퍼센트'], answer: 4, explanation: '건폐율은 250㎡ ÷ 500㎡ = 50퍼센트입니다. 용적률은 산정 연면적 1,000㎡ ÷ 500㎡ = 200퍼센트입니다.', trapType: '건폐율ㆍ용적률 계산' },
+  },
+  {
     index: 24,
     seed: { chapter: '건축법', topic: '가설건축물 존치기간', lawRef: '건축법 시행령 제15조', category: 'issue', difficulty: 'hard', sourceType: 'predicted', sourceRound: 36, questionText: '신고 대상 가설건축물의 존치기간과 관련한 설명으로 가장 적절한 것은?', correctChoice: '가설건축물은 유형에 따라 통상 3년 이내 존치기간이 문제될 수 있고, 연장 또는 별도 인허가 관계를 함께 검토해야 한다.', distractors: ['가설건축물은 신고만 하면 언제나 영구 존치할 수 있다.', '가설건축물 존치기간은 부동산 거래신고 30일과 동일하다.', '가설건축물은 건축법상 도로ㆍ대지 요건과 전혀 관련이 없다.', '가설건축물 신고에는 어떤 경우에도 개발행위허가 문제가 연결될 수 없다.'], answer: 4, explanation: '가설건축물은 3년 이내 존치기간과 인허가 의제 여부가 시험 함정입니다.', trapType: '가설건축물 3년' },
   },
@@ -133,6 +141,10 @@ const officialRegistryTaxOverrides: OfficialQuestionOverride[] = [
   {
     index: 2,
     seed: { chapter: '공간정보법', topic: '지목변경 60일', lawRef: '공간정보의 구축 및 관리 등에 관한 법률 제81조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '지목변경 신청기간에 관한 설명으로 옳은 것은?', correctChoice: '지목변경할 토지가 있으면 사유 발생일부터 60일 이내에 지적소관청에 신청해야 한다.', distractors: ['지목변경은 등기 원인일부터 14일 이내에 등기소에 신청한다.', '지목변경은 계약일부터 30일 이내에 부동산 거래신고로 갈음한다.', '지목변경은 양도일이 속하는 달의 말일부터 2개월 이내 세무서에 신고한다.', '지목변경은 사유 발생일부터 3년 이내면 언제든지 가능하다.'], answer: 3, explanation: '지목변경도 사유 발생일부터 60일 이내 지적소관청 신청입니다.', trapType: '지목변경 60일' },
+  },
+  {
+    index: 3,
+    seed: { chapter: '취득세', topic: '취득세 계산', lawRef: '지방세법상 취득세 과세표준 및 세율 구조', category: 'recent_frequent', difficulty: 'hard', sourceType: 'modified', sourceRound: 36, questionText: '부동산 취득가액이 6억원이고 적용 취득세율이 1퍼센트라고 할 때, 지방교육세와 농어촌특별세를 제외한 취득세 산출세액으로 옳은 것은?', correctChoice: '600만원', distractors: ['60만원', '300만원', '660만원', '6,000만원'], answer: 2, explanation: '취득세 산출세액은 과세표준에 세율을 곱합니다. 6억원 × 1퍼센트 = 600만원입니다.', trapType: '취득세 산출세액 계산' },
   },
   {
     index: 16,
