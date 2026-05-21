@@ -36,17 +36,6 @@ function shuffle<T>(items: T[]): T[] {
   return nextItems;
 }
 
-function varyQuestionText(question: Question): string {
-  const variants = [
-    '각 선택지의 주체ㆍ기한ㆍ효과를 비교하여 판단한다.',
-    '다른 법령의 숫자나 절차가 섞인 선택지를 주의한다.',
-    '실제 시험처럼 예외 표현과 기간 계산을 함께 검토한다.',
-    '암기한 키워드만 보지 말고 요건과 제재를 연결해 판단한다.',
-  ];
-
-  return `${question.questionText} ${variants[randomIndex(variants.length)]}`;
-}
-
 function shuffleChoices(question: Question): Pick<Question, 'choices' | 'answer'> {
   const choices = question.choices.map((choice, index) => ({
     choice,
@@ -70,7 +59,6 @@ function makeSessionVariant(question: Question, index: number, displayStart: num
     id: `${question.id}-run-${Date.now()}-${index}-${randomIndex(100000)}`,
     examNumber: index + 1,
     displayNumber: displayStart + index,
-    questionText: varyQuestionText(question),
   };
 }
 
