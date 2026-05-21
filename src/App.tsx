@@ -43,9 +43,10 @@ export default function App() {
   }
 
   function restart() {
-    setSession(null);
+    const nextSession = createExamSession(selectedMode);
+    setSession(nextSession);
     setResult(null);
-    setPage('setup');
+    setPage('exam');
   }
 
   function selectAnswer(questionId: string, choice: ChoiceNumber) {
@@ -146,4 +147,3 @@ export default function App() {
 
   return null;
 }
-
