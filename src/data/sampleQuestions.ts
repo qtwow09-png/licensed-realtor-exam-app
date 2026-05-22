@@ -1182,6 +1182,70 @@ function makeAuthoredChoices(seed: AuthoredQuestionSeed): [string, string, strin
   return choices.slice(0, 5) as [string, string, string, string, string];
 }
 
+const publicLawDistractorTails = [
+  '라고 보아 별도의 인가ㆍ허가 또는 조례상 제한은 더 이상 문제되지 않는다.',
+  '라고 보아 그 효력이 사법상 권리변동까지 곧바로 확정한다고 본다.',
+  '라고 보아 행정청의 재량 판단이나 법정 절차는 모두 생략된다고 본다.',
+  '라고 보아 다른 공법상 제한과의 중복 적용 가능성은 배제된다고 본다.',
+  '라고 보아 계획 결정과 개별 처분의 효과를 동일하게 취급한다.',
+  '라고 보아 사업시행 단계의 후속 절차는 별도로 거치지 않아도 된다.',
+  '라고 보아 토지소유자의 사법상 합의만으로 공법상 제한이 소멸한다.',
+  '라고 보아 지정ㆍ고시만으로 보상과 등기정리까지 모두 완료된다.',
+];
+
+function expandMarkerChoice(choice: string): string {
+  if (/^[ㄱㄴㄷㄹㅁㅂ](,\s*[ㄱㄴㄷㄹㅁㅂ])*$/.test(choice.replace(/\s/g, ''))) {
+    return `${choice}만 해당한다.`;
+  }
+
+  return choice;
+}
+
+function balancePublicLawChoices(seed: AuthoredQuestionSeed): [string, string, string, string, string] {
+  const choices = makeAuthoredChoices(seed).map(expandMarkerChoice);
+  const correctLength = choices[seed.answer - 1].length;
+  const balancedChoices = choices.map((choice, index) => {
+    if (index === seed.answer - 1 || choice.length >= correctLength * 0.8) {
+      return choice;
+    }
+
+    return `${choice} ${publicLawDistractorTails[(index + seed.topic.length) % publicLawDistractorTails.length]}`;
+  });
+
+  return balancedChoices as [string, string, string, string, string];
+}
+
+function publicLawQuestionText(seed: AuthoredQuestionSeed, index: number): string {
+  if (seed.questionText.includes('모두 고른 것은')) {
+    return seed.questionText;
+  }
+
+  if (!seed.questionText.includes('에 관한 설명으로')) {
+    return seed.questionText;
+  }
+
+  const compactText = seed.questionText.replace('에 관한 설명으로 옳은 것은?', '').replace('에 관한 설명으로 옳지 않은 것은?', '');
+  const pattern = index % 5;
+
+  if (pattern === 0) {
+    return `${compactText}에 관하여 공법상 절차와 효과를 연결한 설명 중 가장 타당한 것은?`;
+  }
+
+  if (pattern === 1) {
+    return `${compactText}에 관하여 법령상 원칙과 예외를 구별할 때 옳은 것은?`;
+  }
+
+  if (pattern === 2) {
+    return `${compactText}에 관하여 인허가ㆍ계획ㆍ권리변동 효과를 구별한 설명으로 옳은 것은?`;
+  }
+
+  if (pattern === 3) {
+    return `${compactText}에 관한 설명 중 공법상 효과를 가장 정확히 설명한 것은?`;
+  }
+
+  return seed.questionText;
+}
+
 function applyOfficialOverrides(
   seeds: AuthoredQuestionSeed[],
   overrides: OfficialQuestionOverride[],
@@ -1216,8 +1280,8 @@ function buildAuthoredSubjectQuestions(subject: Subject, seeds: AuthoredQuestion
     frequencyScore: Math.max(55, 98 - index),
     issueScore: seed.category === 'issue' ? 88 - index : undefined,
     trapType: seed.trapType,
-    questionText: seed.questionText,
-    choices: makeAuthoredChoices(seed),
+    questionText: subject === '공법' ? publicLawQuestionText(seed, index) : seed.questionText,
+    choices: subject === '공법' ? balancePublicLawChoices(seed) : makeAuthoredChoices(seed),
     answer: seed.answer,
     explanation: seed.explanation,
     memoryNote: `${subject} ${seed.topic}: ${seed.trapType ?? '핵심 요건'}을 중심으로 복습하세요.`,
