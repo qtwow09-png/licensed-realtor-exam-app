@@ -90,6 +90,16 @@ export default function App() {
     setPage('setup');
   }
 
+  function goHomeFromExam() {
+    if (!window.confirm('현재 풀이 이력을 버리고 홈으로 돌아갈까요?')) {
+      return;
+    }
+
+    setSession(null);
+    setResult(null);
+    setPage('setup');
+  }
+
   function selectAnswer(questionId: string, choice: ChoiceNumber) {
     setSession((previous) => {
       if (!previous || previous.isPaused) {
@@ -190,6 +200,7 @@ export default function App() {
         onSelectAnswer={selectAnswer}
         onSelectQuestion={selectQuestion}
         onMove={moveQuestion}
+        onGoHome={goHomeFromExam}
         onTogglePause={togglePause}
         onSubmit={submitExam}
       />

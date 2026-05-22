@@ -1,4 +1,4 @@
-import { Pause, Play, Send } from 'lucide-react';
+import { Home, Pause, Play, Send } from 'lucide-react';
 import type { ExamSession } from '../types/exam';
 import { subjectLabel } from '../store/examStore';
 import { Timer } from './Timer';
@@ -6,11 +6,12 @@ import { Timer } from './Timer';
 type ExamHeaderProps = {
   session: ExamSession;
   answeredCount: number;
+  onGoHome: () => void;
   onTogglePause: () => void;
   onSubmit: () => void;
 };
 
-export function ExamHeader({ session, answeredCount, onTogglePause, onSubmit }: ExamHeaderProps) {
+export function ExamHeader({ session, answeredCount, onGoHome, onTogglePause, onSubmit }: ExamHeaderProps) {
   return (
     <header className="examHeader">
       <div>
@@ -23,6 +24,10 @@ export function ExamHeader({ session, answeredCount, onTogglePause, onSubmit }: 
       </div>
       <div className="headerControls">
         <Timer remainingSeconds={session.remainingSeconds} isPaused={session.isPaused} />
+        <button className="secondaryButton" type="button" onClick={onGoHome}>
+          <Home size={17} />
+          홈으로
+        </button>
         <button className="secondaryButton" type="button" onClick={onTogglePause}>
           {session.isPaused ? <Play size={17} /> : <Pause size={17} />}
           {session.isPaused ? '재개' : '일시정지'}

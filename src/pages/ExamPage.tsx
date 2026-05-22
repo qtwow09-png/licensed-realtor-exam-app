@@ -9,6 +9,7 @@ type ExamPageProps = {
   onSelectAnswer: (questionId: string, choice: ChoiceNumber) => void;
   onSelectQuestion: (index: number) => void;
   onMove: (delta: -1 | 1) => void;
+  onGoHome: () => void;
   onTogglePause: () => void;
   onSubmit: () => void;
 };
@@ -18,6 +19,7 @@ export function ExamPage({
   onSelectAnswer,
   onSelectQuestion,
   onMove,
+  onGoHome,
   onTogglePause,
   onSubmit,
 }: ExamPageProps) {
@@ -29,6 +31,7 @@ export function ExamPage({
       <ExamHeader
         session={session}
         answeredCount={answeredCount}
+        onGoHome={onGoHome}
         onTogglePause={onTogglePause}
         onSubmit={onSubmit}
       />
@@ -73,4 +76,3 @@ export function ExamPage({
     </main>
   );
 }
-
