@@ -38,6 +38,9 @@ export function ResultPage({ score, onRestart }: ResultPageProps) {
               <span>{result.isCorrect ? '정답' : result.selectedChoice ? '오답' : '미답'}</span>
             </div>
             <p>{result.question.questionText}</p>
+            {result.question.lawUpdateNote && (
+              <p className="lawUpdateNote">{result.question.lawUpdateNote}</p>
+            )}
             <div className="answerCompare">
               <span>선택: {choiceLabels[result.selectedChoice ?? 0]}</span>
               <span>정답: {choiceLabels[result.question.answer]}</span>

@@ -155,6 +155,13 @@ button {
   font-size: 14px;
 }
 
+.examHeader .roundSource {
+  display: block;
+  margin-top: 4px;
+  color: #2f7d57;
+  font-weight: 800;
+}
+
 .headerControls {
   display: flex;
   align-items: center;
@@ -483,4 +490,10 @@ button {
 .explanation {
   color: #4f5d70;
   line-height: 1.65;
+}
+
+.lawUpdateNote {
+  margin: 10px 0 0;
+  color: #5f6b7d;
+  font-size: 14px;
 }

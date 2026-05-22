@@ -1,5 +1,5 @@
 import { sampleQuestions } from '../data/sampleQuestions';
-import type { ChoiceNumber, ExamMode, Question, QuestionCategory, Subject } from '../types/exam';
+import type { ChoiceNumber, ExamMode, Question, QuestionCategory, ReleasedRoundMeta, Subject } from '../types/exam';
 
 const targetByCategory: Record<QuestionCategory, number> = {
   recent_frequent: 16,
@@ -50,27 +50,46 @@ function shuffleChoices(question: Question): Pick<Question, 'choices' | 'answer'
   };
 }
 
-function makeSessionVariant(question: Question, index: number, displayStart: number): Question {
+function makeSessionVariant(
+  question: Question,
+  index: number,
+  displayStart: number,
+  roundMeta?: ReleasedRoundMeta,
+): Question {
   const choiceVariant = shuffleChoices(question);
+  const lawUpdatePrefix = roundMeta
+    ? `[${roundMeta.title}] ${roundMeta.lawBasis}. `
+    : '';
 
   return {
     ...question,
     ...choiceVariant,
-    id: `${question.id}-run-${Date.now()}-${index}-${randomIndex(100000)}`,
+    id: `${question.id}-round-${roundMeta?.round ?? question.sourceRound}-run-${Date.now()}-${index}-${randomIndex(100000)}`,
+    sourceRound: roundMeta?.round ?? question.sourceRound,
+    sourceYear: roundMeta?.year ?? question.sourceYear,
+    sourceType: roundMeta ? 'modified' : question.sourceType,
+    sourceTitle: roundMeta?.title ?? question.sourceTitle,
+    lawUpdateNote: roundMeta?.note ?? question.lawUpdateNote,
     examNumber: index + 1,
     displayNumber: displayStart + index,
+    explanation: `${lawUpdatePrefix}${question.explanation}`,
   };
 }
 
-function takeSubjectQuestions(subject: Subject): Question[] {
+function takeSubjectQuestions(subject: Subject, roundMeta?: ReleasedRoundMeta): Question[] {
   const candidates = sampleQuestions.filter((question) => question.subject === subject);
   const selected: Question[] = [];
+  const roundOffset = roundMeta ? roundMeta.round % 7 : 0;
 
   Object.entries(targetByCategory).forEach(([category, targetCount]) => {
     const categoryQuestions = shuffle(
       candidates.filter((question) => question.category === category),
     );
-    selected.push(...categoryQuestions.slice(0, targetCount));
+    const rotatedQuestions = [
+      ...categoryQuestions.slice(roundOffset),
+      ...categoryQuestions.slice(0, roundOffset),
+    ];
+    selected.push(...rotatedQuestions.slice(0, targetCount));
   });
 
   const selectedIds = new Set(selected.map((question) => question.id));
@@ -98,6 +117,7 @@ function displayStartFor(mode: ExamMode, subject: Subject, subjectIndex: number)
 export function buildExamPaper(options: {
   mode: ExamMode;
   subjects: Subject[];
+  roundMeta?: ReleasedRoundMeta;
 }): Question[] {
   let paper: Question[] = [];
   let fingerprint = '';
@@ -107,8 +127,8 @@ export function buildExamPaper(options: {
     attempts += 1;
     paper = options.subjects.flatMap((subject, subjectIndex) => {
       const startNumber = displayStartFor(options.mode, subject, subjectIndex);
-      return takeSubjectQuestions(subject).map((question, index) => (
-        makeSessionVariant(question, index, startNumber)
+      return takeSubjectQuestions(subject, options.roundMeta).map((question, index) => (
+        makeSessionVariant(question, index, startNumber, options.roundMeta)
       ));
     });
     fingerprint = paper

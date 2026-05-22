@@ -21,7 +21,7 @@ export function ExamSetupPage({ selectedMode, onSelectMode, onStart }: ExamSetup
       <section className="setupIntro">
         <p className="eyebrow">MVP 모의시험</p>
         <h1>공인중개사 2차 시험 대비 문제 풀이</h1>
-        <p>실제 시험지처럼 왼쪽 답안표와 오른쪽 문제지를 보며 제한시간 안에 풀이합니다.</p>
+        <p>공개 기출의 반복 쟁점을 현행 법령 기준으로 보정한 시험지를 제한시간 안에 풀이합니다.</p>
       </section>
       <section className="modeGrid" aria-label="시험 모드 선택">
         {(Object.keys(examConfigs) as ExamMode[]).map((mode) => {
@@ -39,7 +39,7 @@ export function ExamSetupPage({ selectedMode, onSelectMode, onStart }: ExamSetup
               <Icon size={24} />
               <strong>{config.title}</strong>
               <span>{config.subjects.join(' + ')}</span>
-              <em>{config.durationMinutes}분 · {config.subjects.length * 40}문항</em>
+              <em>{config.durationMinutes}분 · {config.subjects.length * 40}문항 · 회차 순환</em>
             </button>
           );
         })}
@@ -51,4 +51,3 @@ export function ExamSetupPage({ selectedMode, onSelectMode, onStart }: ExamSetup
     </main>
   );
 }
-

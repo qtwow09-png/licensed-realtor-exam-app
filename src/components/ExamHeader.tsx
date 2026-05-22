@@ -17,6 +17,9 @@ export function ExamHeader({ session, answeredCount, onTogglePause, onSubmit }: 
         <p className="eyebrow">공인중개사 2차 모의시험</p>
         <h1>{session.config.title}</h1>
         <span>{subjectLabel(session.config.subjects)} · {answeredCount}/{session.questions.length}문항 답변</span>
+        {session.roundMeta && (
+          <span className="roundSource">{session.roundMeta.title} · {session.roundMeta.lawBasis}</span>
+        )}
       </div>
       <div className="headerControls">
         <Timer remainingSeconds={session.remainingSeconds} isPaused={session.isPaused} />
@@ -32,4 +35,3 @@ export function ExamHeader({ session, answeredCount, onTogglePause, onSubmit }: 
     </header>
   );
 }
-

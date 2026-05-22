@@ -34,6 +34,17 @@ export type Question = {
   answer: ChoiceNumber;
   explanation: string;
   memoryNote?: string;
+  lawUpdateNote?: string;
+  sourceTitle?: string;
+};
+
+export type ReleasedRoundMeta = {
+  round: number;
+  year: number;
+  title: string;
+  sourceUrl: string;
+  lawBasis: string;
+  note: string;
 };
 
 export type UserAnswer = {
@@ -55,6 +66,7 @@ export type ExamConfig = {
 
 export type ExamSession = {
   config: ExamConfig;
+  roundMeta?: ReleasedRoundMeta;
   questions: Question[];
   answers: Record<string, UserAnswer>;
   currentIndex: number;

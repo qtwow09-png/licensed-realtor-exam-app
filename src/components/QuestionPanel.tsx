@@ -38,6 +38,7 @@ export function QuestionPanel({ question, answer, onSelectAnswer }: QuestionPane
         <span>{question.chapter}</span>
         <span>{question.category}</span>
         <span>{question.difficulty}</span>
+        {question.sourceTitle && <span>{question.sourceTitle}</span>}
       </div>
       <h2>{question.displayNumber}. {parsedQuestion.stem}</h2>
       {parsedQuestion.examples.length > 0 && (
@@ -66,7 +67,6 @@ export function QuestionPanel({ question, answer, onSelectAnswer }: QuestionPane
           );
         })}
       </div>
-      {question.memoryNote && <p className="memoryNote">{question.memoryNote}</p>}
     </section>
   );
 }
