@@ -1,4 +1,4 @@
-import { BookOpenCheck, ClipboardList, Landmark, Play, ScrollText } from 'lucide-react';
+import { BookOpenCheck, ClipboardList, Landmark, NotebookTabs, Play, RefreshCcw, RotateCcw, ScrollText } from 'lucide-react';
 import { examConfigs } from '../store/examStore';
 import type { ExamMode } from '../types/exam';
 
@@ -6,6 +6,10 @@ type ExamSetupPageProps = {
   selectedMode: ExamMode;
   onSelectMode: (mode: ExamMode) => void;
   onStart: () => void;
+  wrongNoteCount: number;
+  onStartWrongReview: () => void;
+  onOpenWrongNotes: () => void;
+  onResetProgress: () => void;
 };
 
 const modeIcons = {
@@ -15,7 +19,15 @@ const modeIcons = {
   registry_tax_only: ScrollText,
 };
 
-export function ExamSetupPage({ selectedMode, onSelectMode, onStart }: ExamSetupPageProps) {
+export function ExamSetupPage({
+  selectedMode,
+  onSelectMode,
+  onStart,
+  wrongNoteCount,
+  onStartWrongReview,
+  onOpenWrongNotes,
+  onResetProgress,
+}: ExamSetupPageProps) {
   return (
     <main className="setupPage">
       <section className="setupIntro">
@@ -48,6 +60,21 @@ export function ExamSetupPage({ selectedMode, onSelectMode, onStart }: ExamSetup
         <Play size={20} />
         시험 시작
       </button>
+      <section className="studyTools" aria-label="복습 도구">
+        <button type="button" onClick={onStartWrongReview} disabled={wrongNoteCount === 0}>
+          <RotateCcw size={18} />
+          틀린문제 복습
+          <span>{wrongNoteCount}</span>
+        </button>
+        <button type="button" onClick={onOpenWrongNotes}>
+          <NotebookTabs size={18} />
+          오답노트
+        </button>
+        <button type="button" onClick={onResetProgress}>
+          <RefreshCcw size={18} />
+          초기화
+        </button>
+      </section>
     </main>
   );
 }

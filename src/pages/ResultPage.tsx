@@ -1,14 +1,15 @@
-import { RotateCcw } from 'lucide-react';
+import { NotebookTabs, RotateCcw } from 'lucide-react';
 import type { ExamScore } from '../types/exam';
 
 type ResultPageProps = {
   score: ExamScore;
   onRestart: () => void;
+  onOpenWrongNotes: () => void;
 };
 
 const choiceLabels = ['-', '①', '②', '③', '④', '⑤'];
 
-export function ResultPage({ score, onRestart }: ResultPageProps) {
+export function ResultPage({ score, onRestart, onOpenWrongNotes }: ResultPageProps) {
   return (
     <main className="resultPage">
       <section className="resultSummary">
@@ -49,10 +50,16 @@ export function ResultPage({ score, onRestart }: ResultPageProps) {
           </article>
         ))}
       </section>
-      <button className="startButton" type="button" onClick={onRestart}>
-        <RotateCcw size={18} />
-        다시 풀기
-      </button>
+      <div className="resultActions">
+        <button className="startButton" type="button" onClick={onRestart}>
+          <RotateCcw size={18} />
+          다시 풀기
+        </button>
+        <button className="secondaryActionButton" type="button" onClick={onOpenWrongNotes}>
+          <NotebookTabs size={18} />
+          오답노트 보기
+        </button>
+      </div>
     </main>
   );
 }

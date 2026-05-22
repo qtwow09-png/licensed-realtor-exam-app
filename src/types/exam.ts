@@ -15,6 +15,7 @@ export type ChoiceNumber = 1 | 2 | 3 | 4 | 5;
 
 export type Question = {
   id: string;
+  originQuestionId?: string;
   sourceRound: number;
   sourceYear?: number;
   subject: Subject;
@@ -56,6 +57,7 @@ export type UserAnswer = {
 };
 
 export type ExamMode = 'first_period' | 'brokerage_only' | 'public_law_only' | 'registry_tax_only';
+export type AppExamMode = ExamMode | 'wrong_review';
 
 export type ExamConfig = {
   mode: ExamMode;
@@ -66,6 +68,7 @@ export type ExamConfig = {
 
 export type ExamSession = {
   config: ExamConfig;
+  isWrongReview?: boolean;
   roundMeta?: ReleasedRoundMeta;
   questions: Question[];
   answers: Record<string, UserAnswer>;
@@ -95,4 +98,26 @@ export type ExamScore = {
   score: number;
   subjectScores: SubjectScore[];
   questionResults: QuestionResult[];
+};
+
+export type WrongNote = {
+  questionId: string;
+  subject: Subject;
+  chapter: string;
+  topic: string;
+  lawRef?: string;
+  questionText: string;
+  choices: [string, string, string, string, string];
+  answer: ChoiceNumber;
+  explanation: string;
+  sourceRound: number;
+  sourceYear?: number;
+  sourceTitle?: string;
+  lawUpdateNote?: string;
+  trapType?: string;
+  wrongCount: number;
+  correctCount: number;
+  lastSelectedChoice?: ChoiceNumber;
+  lastWrongAt: string;
+  lastCorrectAt?: string;
 };

@@ -2,17 +2,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { ExamPage } from './pages/ExamPage';
 import { ExamSetupPage } from './pages/ExamSetupPage';
 import { ResultPage } from './pages/ResultPage';
-import { createExamSession, setAnswer } from './store/examStore';
+import { WrongNotePage } from './pages/WrongNotePage';
+import { createExamSession, createWrongReviewSession, setAnswer } from './store/examStore';
 import type { ChoiceNumber, ExamMode, ExamScore, ExamSession } from './types/exam';
 import { scoreExam } from './utils/scoring';
+import { getWrongNoteCount, recordWrongNotes, resetStudyData } from './utils/wrongNoteStore';
 
-type AppPage = 'setup' | 'exam' | 'result';
+type AppPage = 'setup' | 'exam' | 'result' | 'wrongNotes';
 
 export default function App() {
   const [page, setPage] = useState<AppPage>('setup');
   const [selectedMode, setSelectedMode] = useState<ExamMode>('first_period');
   const [session, setSession] = useState<ExamSession | null>(null);
   const [result, setResult] = useState<ExamScore | null>(null);
+  const [wrongNoteCount, setWrongNoteCount] = useState(() => getWrongNoteCount());
 
   const currentResult = useMemo(() => {
     if (result) {
@@ -38,15 +41,53 @@ export default function App() {
       return;
     }
 
-    setResult(scoreExam(session.questions, session.answers));
+    const nextResult = scoreExam(session.questions, session.answers);
+    recordWrongNotes(nextResult);
+    setWrongNoteCount(getWrongNoteCount());
+    setResult(nextResult);
     setPage('result');
   }
 
   function restart() {
-    const nextSession = createExamSession(selectedMode);
+    const nextSession = session?.isWrongReview
+      ? createWrongReviewSession()
+      : createExamSession(selectedMode);
+
+    if (!nextSession) {
+      setWrongNoteCount(0);
+      setPage('setup');
+      return;
+    }
+
     setSession(nextSession);
     setResult(null);
     setPage('exam');
+  }
+
+  function startWrongReview() {
+    const nextSession = createWrongReviewSession();
+
+    if (!nextSession) {
+      setWrongNoteCount(0);
+      setPage('wrongNotes');
+      return;
+    }
+
+    setSession(nextSession);
+    setResult(null);
+    setPage('exam');
+  }
+
+  function resetProgress() {
+    if (!window.confirm('오답노트와 회차 진행도를 모두 초기화할까요?')) {
+      return;
+    }
+
+    resetStudyData();
+    setWrongNoteCount(0);
+    setResult(null);
+    setSession(null);
+    setPage('setup');
   }
 
   function selectAnswer(questionId: string, choice: ChoiceNumber) {
@@ -124,6 +165,20 @@ export default function App() {
         selectedMode={selectedMode}
         onSelectMode={setSelectedMode}
         onStart={startExam}
+        wrongNoteCount={wrongNoteCount}
+        onStartWrongReview={startWrongReview}
+        onOpenWrongNotes={() => setPage('wrongNotes')}
+        onResetProgress={resetProgress}
+      />
+    );
+  }
+
+  if (page === 'wrongNotes') {
+    return (
+      <WrongNotePage
+        onBack={() => setPage('setup')}
+        onStartWrongReview={startWrongReview}
+        onResetProgress={resetProgress}
       />
     );
   }
@@ -142,7 +197,13 @@ export default function App() {
   }
 
   if (page === 'result' && currentResult) {
-    return <ResultPage score={currentResult} onRestart={restart} />;
+    return (
+      <ResultPage
+        score={currentResult}
+        onRestart={restart}
+        onOpenWrongNotes={() => setPage('wrongNotes')}
+      />
+    );
   }
 
   return null;

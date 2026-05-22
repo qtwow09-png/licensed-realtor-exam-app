@@ -65,6 +65,7 @@ function makeSessionVariant(
     ...question,
     ...choiceVariant,
     id: `${question.id}-round-${roundMeta?.round ?? question.sourceRound}-run-${Date.now()}-${index}-${randomIndex(100000)}`,
+    originQuestionId: question.originQuestionId ?? question.id,
     sourceRound: roundMeta?.round ?? question.sourceRound,
     sourceYear: roundMeta?.year ?? question.sourceYear,
     sourceType: roundMeta ? 'modified' : question.sourceType,

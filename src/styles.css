@@ -31,7 +31,8 @@ button {
 }
 
 .setupPage,
-.resultPage {
+.resultPage,
+.wrongNotePage {
   width: min(1120px, calc(100vw - 64px));
   margin: 0 auto;
   padding: 56px 0;
@@ -110,6 +111,8 @@ button {
 .startButton,
 .primaryButton,
 .secondaryButton,
+.secondaryActionButton,
+.studyTools button,
 .navBar button {
   display: inline-flex;
   align-items: center;
@@ -126,6 +129,50 @@ button {
   background: #1f6f4a;
   color: #fff;
   font-weight: 800;
+}
+
+.startButton:disabled,
+.studyTools button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.studyTools,
+.resultActions,
+.wrongNoteActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.studyTools button,
+.secondaryActionButton {
+  min-height: 46px;
+  padding: 0 15px;
+  border: 1px solid #cfd7e2;
+  background: #fff;
+  color: #273246;
+  font-weight: 800;
+}
+
+.studyTools button span {
+  min-width: 24px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #e7f1eb;
+  color: #1f6f4a;
+  font-size: 13px;
+}
+
+.secondaryActionButton.danger {
+  border-color: #f0c9bc;
+  color: #b5482b;
+}
+
+.resultActions .startButton,
+.wrongNoteActions .startButton {
+  margin-top: 0;
 }
 
 .examPage {
@@ -496,4 +543,96 @@ button {
   margin: 10px 0 0;
   color: #5f6b7d;
   font-size: 14px;
+}
+
+.wrongNoteHero,
+.emptyWrongNotes,
+.wrongSubjectColumn {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.wrongNoteHero,
+.emptyWrongNotes {
+  padding: 28px 32px;
+}
+
+.wrongNoteHero h1,
+.emptyWrongNotes h2 {
+  margin: 0;
+}
+
+.wrongSubjectGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.wrongSubjectColumn {
+  min-width: 0;
+  padding: 18px;
+}
+
+.wrongSubjectColumn h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 14px;
+  font-size: 21px;
+}
+
+.wrongSubjectColumn h2 span {
+  min-width: 30px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e7f1eb;
+  color: #1f6f4a;
+  font-size: 14px;
+  text-align: center;
+}
+
+.wrongNoteItem {
+  padding: 16px 0;
+  border-top: 1px solid #e4e9f0;
+}
+
+.wrongNoteHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wrongNoteHead strong,
+.wrongNoteHead span,
+.wrongNoteStats span {
+  display: block;
+}
+
+.wrongNoteHead strong {
+  font-size: 16px;
+}
+
+.wrongNoteHead span,
+.wrongNoteStats span,
+.emptySubject {
+  color: #647084;
+  font-size: 13px;
+}
+
+.wrongNoteStats {
+  flex: 0 0 86px;
+  text-align: right;
+}
+
+.wrongNoteStats span:first-child {
+  color: #c94929;
+  font-weight: 900;
+}
+
+.wrongQuestionText {
+  margin: 12px 0 0;
+  color: #263244;
+  line-height: 1.55;
 }

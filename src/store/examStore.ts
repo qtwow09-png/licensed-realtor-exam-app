@@ -1,6 +1,7 @@
 import { firstReleasedRound, nextReleasedRound, releasedRoundByNumber } from '../data/releasedRounds';
 import type { ChoiceNumber, ExamConfig, ExamMode, ExamSession, ReleasedRoundMeta, Subject, UserAnswer } from '../types/exam';
 import { buildExamPaper } from '../utils/buildExamPaper';
+import { buildWrongReviewQuestions } from '../utils/wrongNoteStore';
 
 export const examConfigs: Record<ExamMode, ExamConfig> = {
   first_period: {
@@ -67,6 +68,31 @@ export function createExamSession(mode: ExamMode): ExamSession {
     answers: {},
     currentIndex: 0,
     remainingSeconds: config.durationMinutes * 60,
+    isPaused: false,
+  };
+}
+
+export function createWrongReviewSession(): ExamSession | null {
+  const questions = buildWrongReviewQuestions();
+
+  if (questions.length === 0) {
+    return null;
+  }
+
+  const durationMinutes = Math.max(20, Math.ceil(questions.length * 1.25));
+
+  return {
+    config: {
+      mode: 'first_period',
+      title: '틀린문제 복습',
+      subjects: Array.from(new Set(questions.map((question) => question.subject))) as Subject[],
+      durationMinutes,
+    },
+    isWrongReview: true,
+    questions,
+    answers: {},
+    currentIndex: 0,
+    remainingSeconds: durationMinutes * 60,
     isPaused: false,
   };
 }
