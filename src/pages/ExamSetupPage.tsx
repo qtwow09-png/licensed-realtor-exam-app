@@ -1,5 +1,5 @@
 import { BookOpenCheck, ClipboardList, Landmark, NotebookTabs, Play, RefreshCcw, RotateCcw, ScrollText } from 'lucide-react';
-import { numericMemorySubjects } from '../data/numericMemoryCodes';
+import { numericMemoryCoverage, numericMemorySubjects, type NumericMemorySubject } from '../data/numericMemoryCodes';
 import { examConfigs } from '../store/examStore';
 import type { ExamMode } from '../types/exam';
 
@@ -11,6 +11,7 @@ type ExamSetupPageProps = {
   onStartWrongReview: () => void;
   onOpenWrongNotes: () => void;
   onResetProgress: () => void;
+  onOpenNumericMemory: (subject: NumericMemorySubject['subject']) => void;
 };
 
 const modeIcons = {
@@ -28,6 +29,7 @@ export function ExamSetupPage({
   onStartWrongReview,
   onOpenWrongNotes,
   onResetProgress,
+  onOpenNumericMemory,
 }: ExamSetupPageProps) {
   return (
     <main className="setupPage">
@@ -80,37 +82,23 @@ export function ExamSetupPage({
         <div className="sectionHeader">
           <p className="eyebrow">22~36회 숫자 암기코드</p>
           <h2>숫자만 따로 보는 2차 시험 압축노트</h2>
-          <p>연도, 기간, 비율, 동의율, 계산식을 과목별 주제 단위로 묶었습니다.</p>
+          <p>{numericMemoryCoverage}</p>
         </div>
-        <div className="numericSubjectGrid">
+        <div className="numericSubjectButtonGrid">
           {numericMemorySubjects.map((subject) => (
-            <article className="numericSubjectCard" key={subject.subject}>
-              <div className="numericSubjectHead">
+            <button
+              className="numericSubjectButton"
+              key={subject.subject}
+              type="button"
+              onClick={() => onOpenNumericMemory(subject.subject)}
+            >
+              <div>
                 <strong>{subject.subject}</strong>
                 <span>{subject.groups.reduce((total, group) => total + group.items.length, 0)}개 숫자코드</span>
                 <p>{subject.headline}</p>
               </div>
-              {subject.groups.map((group) => (
-                <section className="numericGroup" key={group.title}>
-                  <h3>{group.title}</h3>
-                  <p>{group.summary}</p>
-                  <div className="numericItemList">
-                    {group.items.map((item) => (
-                      <div className="numericItem" key={`${group.title}-${item.code}-${item.theme}`}>
-                        <span className="memoryCode">{item.code}</span>
-                        <div>
-                          <strong>{item.theme}</strong>
-                          <em>{item.numbers}</em>
-                          <p>{item.point}</p>
-                          <small>{item.cue}</small>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              ))}
-              <p className="sourceNote">{subject.sourceNote}</p>
-            </article>
+              <em>상세 보기</em>
+            </button>
           ))}
         </div>
       </section>

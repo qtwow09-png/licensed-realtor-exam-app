@@ -17,11 +17,33 @@ export function firstReleasedRound(): ReleasedRoundMeta {
   return releasedRoundCatalog[0];
 }
 
-export function nextReleasedRound(currentRound: number): ReleasedRoundMeta {
-  const currentIndex = releasedRoundCatalog.findIndex((round) => round.round === currentRound);
-  const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % releasedRoundCatalog.length;
+function randomIndex(max: number): number {
+  if (max <= 0) {
+    return 0;
+  }
 
-  return releasedRoundCatalog[nextIndex];
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const value = new Uint32Array(1);
+    crypto.getRandomValues(value);
+    return value[0] % max;
+  }
+
+  return Math.floor(Math.random() * max);
+}
+
+export function shuffledReleasedRoundNumbers(excludeRound?: number): number[] {
+  const nextRounds = releasedRoundCatalog.map((round) => round.round);
+
+  for (let index = nextRounds.length - 1; index > 0; index -= 1) {
+    const swapIndex = randomIndex(index + 1);
+    [nextRounds[index], nextRounds[swapIndex]] = [nextRounds[swapIndex], nextRounds[index]];
+  }
+
+  if (excludeRound && nextRounds[0] === excludeRound && nextRounds.length > 1) {
+    [nextRounds[0], nextRounds[1]] = [nextRounds[1], nextRounds[0]];
+  }
+
+  return nextRounds;
 }
 
 export function releasedRoundByNumber(roundNumber: number): ReleasedRoundMeta {

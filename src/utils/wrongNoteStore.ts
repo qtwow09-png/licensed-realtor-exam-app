@@ -1,7 +1,11 @@
 import type { ExamScore, Question, QuestionResult, Subject, WrongNote } from '../types/exam';
 
 const wrongNotesStorageKey = 'licensed-realtor-exam-wrong-notes';
-const releasedRoundStoragePrefix = 'licensed-realtor-exam-next-released-round';
+const releasedRoundStoragePrefixes = [
+  'licensed-realtor-exam-next-released-round',
+  'licensed-realtor-exam-random-round-queue',
+  'licensed-realtor-exam-last-random-round',
+];
 
 const subjects: Subject[] = ['중개사법', '공법', '공시세법'];
 
@@ -157,6 +161,6 @@ export function resetStudyData(): void {
 
   window.localStorage.removeItem(wrongNotesStorageKey);
   Object.keys(window.localStorage)
-    .filter((key) => key.startsWith(releasedRoundStoragePrefix))
+    .filter((key) => releasedRoundStoragePrefixes.some((prefix) => key.startsWith(prefix)))
     .forEach((key) => window.localStorage.removeItem(key));
 }

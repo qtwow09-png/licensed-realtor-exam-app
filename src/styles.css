@@ -32,7 +32,8 @@ button {
 
 .setupPage,
 .resultPage,
-.wrongNotePage {
+.wrongNotePage,
+.numericMemoryPage {
   width: min(1120px, calc(100vw - 64px));
   margin: 0 auto;
   padding: 56px 0;
@@ -193,24 +194,34 @@ button {
   color: #647084;
 }
 
-.numericSubjectGrid {
+.numericSubjectButtonGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
 
-.numericSubjectCard {
+.numericSubjectButton {
+  display: flex;
+  min-height: 178px;
+  flex-direction: column;
+  justify-content: space-between;
   padding: 20px;
   border: 1px solid #d8dee8;
   border-radius: 8px;
   background: #fff;
+  color: #172033;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.numericSubjectHead {
-  margin-bottom: 18px;
+.numericSubjectButton:hover {
+  border-color: #2f7d57;
+  box-shadow: 0 12px 32px rgba(34, 68, 93, 0.13);
+  transform: translateY(-2px);
 }
 
-.numericSubjectHead strong {
+.numericSubjectButton strong {
   display: inline-flex;
   padding: 5px 10px;
   border-radius: 999px;
@@ -219,7 +230,7 @@ button {
   font-size: 14px;
 }
 
-.numericSubjectHead > span {
+.numericSubjectButton span {
   display: inline-flex;
   margin-left: 6px;
   padding: 5px 10px;
@@ -230,12 +241,19 @@ button {
   font-weight: 800;
 }
 
-.numericSubjectHead p {
+.numericSubjectButton p {
   margin: 10px 0 0;
   color: #263244;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   line-height: 1.45;
+}
+
+.numericSubjectButton em {
+  margin-top: 18px;
+  color: #1f6f4a;
+  font-style: normal;
+  font-weight: 900;
 }
 
 .numericGroup {
@@ -311,6 +329,245 @@ button {
   color: #647084;
   font-size: 13px;
   line-height: 1.55;
+}
+
+.numericMemoryHero,
+.numericDetailIntro,
+.numericDetailGroup {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.numericMemoryHero {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 24px;
+  align-items: start;
+  padding: 28px 32px;
+}
+
+.numericMemoryHero h1 {
+  margin: 0 0 10px;
+  font-size: 36px;
+  line-height: 1.15;
+}
+
+.numericMemoryHero p:last-child {
+  margin: 0;
+  color: #566274;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.numericSubjectTabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.numericSubjectTabs button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid #cfd7e2;
+  border-radius: 8px;
+  background: #fff;
+  color: #273246;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.numericSubjectTabs button.active {
+  border-color: #1f6f4a;
+  background: #e7f1eb;
+  color: #1f6f4a;
+}
+
+.numericSubjectTabs span {
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #edf1f6;
+  color: #526071;
+  text-align: center;
+}
+
+.numericDetailIntro {
+  display: grid;
+  grid-template-columns: 24px 140px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 16px 18px;
+  color: #4f5d70;
+}
+
+.numericDetailIntro svg,
+.numericDetailIntro strong {
+  color: #1f6f4a;
+}
+
+.numericDetailIntro p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.numericDetailGrid {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.numericDetailGroup {
+  padding: 22px;
+}
+
+.numericDetailGroupHead {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  align-items: start;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e4e9f0;
+}
+
+.numericDetailGroupHead h2 {
+  margin: 0;
+  font-size: 23px;
+}
+
+.numericDetailGroupHead span {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #e7f1eb;
+  color: #1f6f4a;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.numericDetailGroupHead p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #647084;
+  line-height: 1.55;
+}
+
+.numericDetailList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding-top: 14px;
+}
+
+.numericDetailItem {
+  display: grid;
+  grid-template-columns: 106px 1fr;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #e1e6ee;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.memoryCodeButton {
+  position: relative;
+  align-self: start;
+  min-height: 42px;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 7px;
+  background: #253348;
+  color: #fff;
+  cursor: help;
+  font-weight: 900;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.memoryTooltip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  z-index: 10;
+  width: 300px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #172033;
+  box-shadow: 0 14px 34px rgba(23, 32, 51, 0.25);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  opacity: 0;
+  pointer-events: none;
+  text-align: left;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.memoryTooltip::before {
+  position: absolute;
+  left: 20px;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  background: #172033;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.memoryCodeButton:hover .memoryTooltip,
+.memoryCodeButton:focus-visible .memoryTooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.numericDetailItemHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.numericDetailItemHead strong {
+  font-size: 16px;
+}
+
+.numericDetailItemHead span {
+  flex: 0 0 auto;
+  color: #647084;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.numericDetailItem em,
+.numericDetailItem small {
+  display: block;
+}
+
+.numericDetailItem em {
+  color: #1f6f4a;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.numericDetailItem p {
+  margin: 7px 0;
+  color: #4f5d70;
+  line-height: 1.55;
+}
+
+.numericDetailItem small {
+  color: #8a5b17;
+  font-weight: 800;
+  line-height: 1.45;
 }
 
 .examPage {

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { NumericMemorySubject } from './data/numericMemoryCodes';
 import { ExamPage } from './pages/ExamPage';
 import { ExamSetupPage } from './pages/ExamSetupPage';
+import { NumericMemoryPage } from './pages/NumericMemoryPage';
 import { ResultPage } from './pages/ResultPage';
 import { WrongNotePage } from './pages/WrongNotePage';
 import { createExamSession, createWrongReviewSession, setAnswer } from './store/examStore';
@@ -8,11 +10,12 @@ import type { ChoiceNumber, ExamMode, ExamScore, ExamSession } from './types/exa
 import { scoreExam } from './utils/scoring';
 import { getWrongNoteCount, recordWrongNotes, resetStudyData } from './utils/wrongNoteStore';
 
-type AppPage = 'setup' | 'exam' | 'result' | 'wrongNotes';
+type AppPage = 'setup' | 'exam' | 'result' | 'wrongNotes' | 'numericMemory';
 
 export default function App() {
   const [page, setPage] = useState<AppPage>('setup');
   const [selectedMode, setSelectedMode] = useState<ExamMode>('first_period');
+  const [selectedNumericSubject, setSelectedNumericSubject] = useState<NumericMemorySubject['subject']>('중개사법');
   const [session, setSession] = useState<ExamSession | null>(null);
   const [result, setResult] = useState<ExamScore | null>(null);
   const [wrongNoteCount, setWrongNoteCount] = useState(() => getWrongNoteCount());
@@ -179,6 +182,20 @@ export default function App() {
         onStartWrongReview={startWrongReview}
         onOpenWrongNotes={() => setPage('wrongNotes')}
         onResetProgress={resetProgress}
+        onOpenNumericMemory={(subject) => {
+          setSelectedNumericSubject(subject);
+          setPage('numericMemory');
+        }}
+      />
+    );
+  }
+
+  if (page === 'numericMemory') {
+    return (
+      <NumericMemoryPage
+        selectedSubject={selectedNumericSubject}
+        onSelectSubject={setSelectedNumericSubject}
+        onBack={() => setPage('setup')}
       />
     );
   }
