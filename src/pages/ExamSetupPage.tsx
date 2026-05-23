@@ -87,6 +87,7 @@ export function ExamSetupPage({
             <article className="numericSubjectCard" key={subject.subject}>
               <div className="numericSubjectHead">
                 <strong>{subject.subject}</strong>
+                <span>{subject.groups.reduce((total, group) => total + group.items.length, 0)}개 숫자코드</span>
                 <p>{subject.headline}</p>
               </div>
               {subject.groups.map((group) => (

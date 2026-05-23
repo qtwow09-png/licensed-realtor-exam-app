@@ -90,7 +90,7 @@ const officialBrokerageOverrides: OfficialQuestionOverride[] = [
   },
   {
     index: 24,
-    seed: { chapter: '손해배상책임', topic: '보증금액', lawRef: '공인중개사법 제30조 및 시행령 제24조', category: 'issue', difficulty: 'hard', sourceType: 'predicted', sourceRound: 36, questionText: '개업공인중개사의 손해배상책임 보장금액에 관한 설명으로 옳은 것은?', correctChoice: '법인인 개업공인중개사는 2억원 이상, 분사무소를 두는 경우 분사무소마다 1억원 이상을 추가로 설정해야 한다.', distractors: ['법인과 개인은 모두 5천만원 이상이면 충분하다.', '법인은 1억원 이상이고 분사무소 추가 보증은 필요 없다.', '분사무소마다 2억원 이상을 추가해야 하며 본점 보증은 필요 없다.', '손해배상책임 보장은 업무정지 후 30일 안에만 설정하면 된다.'], answer: 1, explanation: '손해배상책임 보장은 법인 2억원 이상, 분사무소마다 1억원 이상 추가를 구별해야 합니다.', trapType: '보증금액 숫자' },
+    seed: { chapter: '손해배상책임', topic: '보증금액', lawRef: '공인중개사법 제30조 및 시행령 제24조', category: 'issue', difficulty: 'hard', sourceType: 'predicted', sourceRound: 36, questionText: '개업공인중개사의 손해배상책임 보장금액에 관한 설명으로 옳은 것은?', correctChoice: '법인인 개업공인중개사는 4억원 이상, 분사무소를 두는 경우 분사무소마다 2억원 이상을 추가로 설정해야 한다.', distractors: ['법인과 개인은 모두 5천만원 이상이면 충분하다.', '법인은 1억원 이상이고 분사무소 추가 보증은 필요 없다.', '분사무소마다 1억원 이상을 추가하면 충분하며 본점 보증은 필요 없다.', '손해배상책임 보장은 업무정지 후 30일 안에만 설정하면 된다.'], answer: 1, explanation: '현행 손해배상책임 보장은 법인 4억원 이상, 법인이 아닌 개업공인중개사 2억원 이상, 분사무소마다 2억원 이상 추가를 구별해야 합니다.', trapType: '보증금액 숫자' },
   },
   {
     index: 28,
