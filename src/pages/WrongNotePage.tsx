@@ -46,6 +46,15 @@ function WrongNoteItem({ note }: { note: WrongNote }) {
         </div>
       </div>
       <p className="wrongQuestionText">{note.questionText}</p>
+      {note.questionBoxes?.map((box, index) => (
+        <div className="questionExampleBox" key={`${note.questionId}-box-${index}`}>
+          {box.title && <strong className="questionBoxTitle">〈{box.title}〉</strong>}
+          {box.lines.map((line, lineIndex) => (
+            <p key={`${lineIndex}-${line}`}>{line}</p>
+          ))}
+          {box.footer && <p className="questionBoxFooter">{box.footer}</p>}
+        </div>
+      ))}
       {note.lawRef && <p className="lawRef">{note.lawRef}</p>}
       <div className="answerCompare">
         <div>
