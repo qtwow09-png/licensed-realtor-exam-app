@@ -1,4 +1,4 @@
-import type { ChoiceNumber, Question, UserAnswer } from '../types/exam';
+import type { ChoiceNumber, Question, QuestionBox, UserAnswer } from '../types/exam';
 
 type QuestionPanelProps = {
   question: Question;
@@ -28,8 +28,26 @@ function splitQuestionText(questionText: string): {
   };
 }
 
+function QuestionBoxView({ box }: { box: QuestionBox }) {
+  return (
+    <div className="questionExampleBox" aria-label={box.title ?? '보기자료'}>
+      {box.title && <strong className="questionBoxTitle">〈{box.title}〉</strong>}
+      {box.lines.map((line, index) => (
+        <p key={`${index}-${line}`}>{line}</p>
+      ))}
+      {box.footer && <p className="questionBoxFooter">{box.footer}</p>}
+    </div>
+  );
+}
+
 export function QuestionPanel({ question, answer, onSelectAnswer }: QuestionPanelProps) {
   const parsedQuestion = splitQuestionText(question.questionText);
+  const explicitBoxes = question.questionBoxes ?? [];
+  const fallbackBoxes: QuestionBox[] = parsedQuestion.examples.length > 0
+    ? [{ lines: parsedQuestion.examples }]
+    : [];
+  const boxes = explicitBoxes.length > 0 ? explicitBoxes : fallbackBoxes;
+  const stem = explicitBoxes.length > 0 ? question.questionText : parsedQuestion.stem;
 
   return (
     <section className="questionPanel">
@@ -40,14 +58,10 @@ export function QuestionPanel({ question, answer, onSelectAnswer }: QuestionPane
         <span>{question.difficulty}</span>
         {question.sourceTitle && <span>{question.sourceTitle}</span>}
       </div>
-      <h2>{question.displayNumber}. {parsedQuestion.stem}</h2>
-      {parsedQuestion.examples.length > 0 && (
-        <div className="questionExampleBox" aria-label="보기자료">
-          {parsedQuestion.examples.map((example) => (
-            <p key={example}>{example}</p>
-          ))}
-        </div>
-      )}
+      <h2>{question.displayNumber}. {stem}</h2>
+      {boxes.map((box, index) => (
+        <QuestionBoxView key={`${question.id}-box-${index}`} box={box} />
+      ))}
       {question.lawRef && <p className="lawRef">{question.lawRef}</p>}
       <div className="choiceList">
         {question.choices.map((choice, index) => {
@@ -57,7 +71,7 @@ export function QuestionPanel({ question, answer, onSelectAnswer }: QuestionPane
           return (
             <button
               className={selected ? 'questionChoice selected' : 'questionChoice'}
-              key={choice}
+              key={`${choiceNumber}-${choice}`}
               type="button"
               onClick={() => onSelectAnswer(question.id, choiceNumber)}
             >
