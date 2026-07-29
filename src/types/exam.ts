@@ -1,4 +1,5 @@
 export type Subject = '중개사법' | '공법' | '공시세법';
+export type SubSubject = '중개사법' | '공법' | '지적법' | '등기법' | '세법';
 
 export type QuestionCategory =
   | 'recent_frequent'
@@ -28,6 +29,7 @@ export type Question = {
   sourceType: SourceType;
   category: QuestionCategory;
   frequencyScore: number;
+  subSubject?: SubSubject;
   issueScore?: number;
   trapType?: string;
   questionText: string;
@@ -37,6 +39,10 @@ export type Question = {
   memoryNote?: string;
   lawUpdateNote?: string;
   sourceTitle?: string;
+  originalSource?: string;
+  isLawUpdated?: boolean;
+  lawUpdateDescription?: string;
+  needsReview?: boolean;
 };
 
 export type ReleasedRoundMeta = {
@@ -70,6 +76,7 @@ export type ExamSession = {
   config: ExamConfig;
   isWrongReview?: boolean;
   roundMeta?: ReleasedRoundMeta;
+  selectedRound?: number;
   questions: Question[];
   answers: Record<string, UserAnswer>;
   currentIndex: number;
@@ -114,6 +121,11 @@ export type WrongNote = {
   sourceYear?: number;
   sourceTitle?: string;
   lawUpdateNote?: string;
+  subSubject?: SubSubject;
+  originalSource?: string;
+  isLawUpdated?: boolean;
+  lawUpdateDescription?: string;
+  needsReview?: boolean;
   trapType?: string;
   wrongCount: number;
   correctCount: number;

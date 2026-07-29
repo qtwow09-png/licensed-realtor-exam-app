@@ -1,11 +1,14 @@
 import { BookOpenCheck, ClipboardList, Landmark, NotebookTabs, Play, RefreshCcw, RotateCcw, ScrollText } from 'lucide-react';
 import { numericMemoryCoverage, numericMemorySubjects, type NumericMemorySubject } from '../data/numericMemoryCodes';
+import { releasedRoundCatalog } from '../data/releasedRounds';
 import { examConfigs } from '../store/examStore';
 import type { ExamMode } from '../types/exam';
 
 type ExamSetupPageProps = {
   selectedMode: ExamMode;
+  selectedRound: number;
   onSelectMode: (mode: ExamMode) => void;
+  onSelectRound: (round: number) => void;
   onStart: () => void;
   wrongNoteCount: number;
   onStartWrongReview: () => void;
@@ -23,7 +26,9 @@ const modeIcons = {
 
 export function ExamSetupPage({
   selectedMode,
+  selectedRound,
   onSelectMode,
+  onSelectRound,
   onStart,
   wrongNoteCount,
   onStartWrongReview,
@@ -34,9 +39,27 @@ export function ExamSetupPage({
   return (
     <main className="setupPage">
       <section className="setupIntro">
-        <p className="eyebrow">MVP 모의시험</p>
+        <p className="eyebrow">실제 기출 풀이</p>
         <h1>공인중개사 2차 시험 대비 문제 풀이</h1>
-        <p>공개 기출의 반복 쟁점을 현행 법령 기준으로 보정한 시험지를 제한시간 안에 풀이합니다.</p>
+        <p>제30회부터 제36회까지 실제 공개 기출을 회차별 시험 순서 그대로 풀이합니다.</p>
+      </section>
+      <section className="roundPicker" aria-label="기출 회차 선택">
+        <div>
+          <strong>회차 선택</strong>
+          <span>선택한 회차의 실제 문제 순서와 보기 순서를 유지합니다.</span>
+        </div>
+        <div className="roundButtonGroup">
+          {releasedRoundCatalog.map((round) => (
+            <button
+              className={round.round === selectedRound ? 'active' : ''}
+              key={round.round}
+              type="button"
+              onClick={() => onSelectRound(round.round)}
+            >
+              {round.round}회
+            </button>
+          ))}
+        </div>
       </section>
       <section className="modeGrid" aria-label="시험 모드 선택">
         {(Object.keys(examConfigs) as ExamMode[]).map((mode) => {
@@ -54,7 +77,7 @@ export function ExamSetupPage({
               <Icon size={24} />
               <strong>{config.title}</strong>
               <span>{config.subjects.join(' + ')}</span>
-              <em>{config.durationMinutes}분 · {config.subjects.length * 40}문항 · 회차 순환</em>
+              <em>{config.durationMinutes}분 · {config.subjects.length * 40}문항 · 실제 {selectedRound}회</em>
             </button>
           );
         })}

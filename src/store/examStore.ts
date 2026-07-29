@@ -1,4 +1,4 @@
-import { firstReleasedRound, releasedRoundByNumber, shuffledReleasedRoundNumbers } from '../data/releasedRounds';
+import { latestReleasedRound, releasedRoundByNumber } from '../data/releasedRounds';
 import type { ChoiceNumber, ExamConfig, ExamMode, ExamSession, ReleasedRoundMeta, Subject, UserAnswer } from '../types/exam';
 import { buildExamPaper } from '../utils/buildExamPaper';
 import { buildWrongReviewQuestions } from '../utils/wrongNoteStore';
@@ -30,87 +30,41 @@ export const examConfigs: Record<ExamMode, ExamConfig> = {
   },
 };
 
-const roundStoragePrefix = 'licensed-realtor-exam-random-round-queue';
-const lastRoundStoragePrefix = 'licensed-realtor-exam-last-random-round';
+const roundStoragePrefix = 'licensed-realtor-exam-selected-round';
 
 function storageKey(mode: ExamMode): string {
   return `${roundStoragePrefix}:${mode}`;
 }
 
-function lastRoundKey(mode: ExamMode): string {
-  return `${lastRoundStoragePrefix}:${mode}`;
-}
-
-function readRoundQueue(mode: ExamMode): number[] {
+export function readSelectedRound(mode: ExamMode): number {
   if (typeof window === 'undefined') {
-    return shuffledReleasedRoundNumbers();
+    return latestReleasedRound().round;
   }
 
-  const storedQueue = window.localStorage.getItem(storageKey(mode));
-
-  if (!storedQueue) {
-    return [];
-  }
-
-  try {
-    const parsedQueue = JSON.parse(storedQueue);
-    return Array.isArray(parsedQueue)
-      ? parsedQueue.filter((round) => Number.isInteger(round))
-      : [];
-  } catch {
-    return [];
-  }
+  const storedRound = Number(window.localStorage.getItem(storageKey(mode)));
+  return Number.isFinite(storedRound) && storedRound > 0
+    ? releasedRoundByNumber(storedRound).round
+    : latestReleasedRound().round;
 }
 
-function writeRoundQueue(mode: ExamMode, queue: number[]): void {
+export function writeSelectedRound(mode: ExamMode, round: number): void {
   if (typeof window === 'undefined') {
     return;
   }
 
-  window.localStorage.setItem(storageKey(mode), JSON.stringify(queue));
+  window.localStorage.setItem(storageKey(mode), String(releasedRoundByNumber(round).round));
 }
 
-function readLastRound(mode: ExamMode): number | undefined {
-  if (typeof window === 'undefined') {
-    return undefined;
-  }
-
-  const storedRound = Number(window.localStorage.getItem(lastRoundKey(mode)));
-  return Number.isFinite(storedRound) && storedRound > 0 ? storedRound : undefined;
-}
-
-function writeLastRound(mode: ExamMode, round: number): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window.localStorage.setItem(lastRoundKey(mode), String(round));
-}
-
-function pickRandomRound(mode: ExamMode): ReleasedRoundMeta {
-  const lastRound = readLastRound(mode);
-  const queue = readRoundQueue(mode);
-  const nextQueue = queue.length > 0 ? [...queue] : shuffledReleasedRoundNumbers(lastRound);
-  const nextRound = nextQueue.shift();
-
-  writeRoundQueue(mode, nextQueue);
-
-  if (!nextRound) {
-    return firstReleasedRound();
-  }
-
-  writeLastRound(mode, nextRound);
-  return releasedRoundByNumber(nextRound);
-}
-
-export function createExamSession(mode: ExamMode): ExamSession {
+export function createExamSession(mode: ExamMode, round: number): ExamSession {
   const config = examConfigs[mode];
-  const roundMeta = pickRandomRound(mode);
+  const roundMeta = releasedRoundByNumber(round);
   const questions = buildExamPaper({ mode, subjects: config.subjects, roundMeta });
+  writeSelectedRound(mode, roundMeta.round);
 
   return {
     config,
     roundMeta,
+    selectedRound: roundMeta.round,
     questions,
     answers: {},
     currentIndex: 0,

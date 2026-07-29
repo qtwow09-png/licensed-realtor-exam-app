@@ -35,9 +35,10 @@ export function QuestionPanel({ question, answer, onSelectAnswer }: QuestionPane
     <section className="questionPanel">
       <div className="questionMeta">
         <span>{question.subject}</span>
+        {question.subSubject && <span>{question.subSubject}</span>}
         <span>{question.chapter}</span>
-        <span>{question.category}</span>
-        <span>{question.difficulty}</span>
+        <span>{question.isLawUpdated ? '현행법 보정' : '원문'}</span>
+        {question.needsReview && <span>검수 필요</span>}
         {question.sourceTitle && <span>{question.sourceTitle}</span>}
       </div>
       <h2>{question.displayNumber}. {parsedQuestion.stem}</h2>
@@ -49,6 +50,7 @@ export function QuestionPanel({ question, answer, onSelectAnswer }: QuestionPane
         </div>
       )}
       {question.lawRef && <p className="lawRef">{question.lawRef}</p>}
+      {question.lawUpdateNote && <p className="lawUpdateNote">{question.lawUpdateNote}</p>}
       <div className="choiceList">
         {question.choices.map((choice, index) => {
           const choiceNumber = (index + 1) as ChoiceNumber;

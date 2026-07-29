@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { NumericMemorySubject } from './data/numericMemoryCodes';
+import { latestReleasedRound } from './data/releasedRounds';
 import { ExamPage } from './pages/ExamPage';
 import { ExamSetupPage } from './pages/ExamSetupPage';
 import { NumericMemoryPage } from './pages/NumericMemoryPage';
 import { ResultPage } from './pages/ResultPage';
 import { WrongNotePage } from './pages/WrongNotePage';
-import { createExamSession, createWrongReviewSession, setAnswer } from './store/examStore';
+import { createExamSession, createWrongReviewSession, readSelectedRound, setAnswer, writeSelectedRound } from './store/examStore';
 import type { ChoiceNumber, ExamMode, ExamScore, ExamSession } from './types/exam';
 import { scoreExam } from './utils/scoring';
 import { getWrongNoteCount, recordWrongNotes, resetStudyData } from './utils/wrongNoteStore';
@@ -15,6 +16,7 @@ type AppPage = 'setup' | 'exam' | 'result' | 'wrongNotes' | 'numericMemory';
 export default function App() {
   const [page, setPage] = useState<AppPage>('setup');
   const [selectedMode, setSelectedMode] = useState<ExamMode>('first_period');
+  const [selectedRound, setSelectedRound] = useState(() => readSelectedRound('first_period') || latestReleasedRound().round);
   const [selectedNumericSubject, setSelectedNumericSubject] = useState<NumericMemorySubject['subject']>('중개사법');
   const [session, setSession] = useState<ExamSession | null>(null);
   const [result, setResult] = useState<ExamScore | null>(null);
@@ -33,7 +35,7 @@ export default function App() {
   }, [result, session]);
 
   function startExam() {
-    const nextSession = createExamSession(selectedMode);
+    const nextSession = createExamSession(selectedMode, selectedRound);
     setSession(nextSession);
     setResult(null);
     setPage('exam');
@@ -54,7 +56,7 @@ export default function App() {
   function restart() {
     const nextSession = session?.isWrongReview
       ? createWrongReviewSession()
-      : createExamSession(selectedMode);
+      : createExamSession(selectedMode, selectedRound);
 
     if (!nextSession) {
       setWrongNoteCount(0);
@@ -91,6 +93,16 @@ export default function App() {
     setResult(null);
     setSession(null);
     setPage('setup');
+  }
+
+  function selectMode(mode: ExamMode) {
+    setSelectedMode(mode);
+    setSelectedRound(readSelectedRound(mode) || selectedRound);
+  }
+
+  function selectRound(round: number) {
+    setSelectedRound(round);
+    writeSelectedRound(selectedMode, round);
   }
 
   function goHomeFromExam() {
@@ -176,7 +188,9 @@ export default function App() {
     return (
       <ExamSetupPage
         selectedMode={selectedMode}
-        onSelectMode={setSelectedMode}
+        selectedRound={selectedRound}
+        onSelectMode={selectMode}
+        onSelectRound={selectRound}
         onStart={startExam}
         wrongNoteCount={wrongNoteCount}
         onStartWrongReview={startWrongReview}

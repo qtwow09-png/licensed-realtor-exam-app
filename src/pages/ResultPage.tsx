@@ -38,6 +38,9 @@ export function ResultPage({ score, onRestart, onOpenWrongNotes }: ResultPagePro
               <strong>{result.question.displayNumber}. {result.question.topic}</strong>
               <span>{result.isCorrect ? '정답' : result.selectedChoice ? '오답' : '미답'}</span>
             </div>
+            {result.question.subSubject && (
+              <p className="lawUpdateNote">{result.question.sourceTitle} · {result.question.subSubject}</p>
+            )}
             <p>{result.question.questionText}</p>
             {result.question.lawUpdateNote && (
               <p className="lawUpdateNote">{result.question.lawUpdateNote}</p>
