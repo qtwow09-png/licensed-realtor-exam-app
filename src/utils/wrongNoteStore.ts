@@ -48,6 +48,7 @@ function noteFromResult(result: QuestionResult, now: string): WrongNote {
     topic: question.topic,
     lawRef: question.lawRef,
     questionText: question.questionText,
+    questionBoxes: question.questionBoxes,
     choices: question.choices,
     answer: question.answer,
     explanation: question.explanation,
@@ -86,6 +87,7 @@ export function recordWrongNotes(score: ExamScore): void {
       notes[questionId] = {
         ...nextNote,
         questionText: result.question.questionText,
+        questionBoxes: result.question.questionBoxes,
         choices: result.question.choices,
         answer: result.question.answer,
         explanation: result.question.explanation,
@@ -146,6 +148,7 @@ export function buildWrongReviewQuestions(): Question[] {
     frequencyScore: Math.min(100, 70 + note.wrongCount * 5),
     trapType: note.trapType,
     questionText: note.questionText,
+    questionBoxes: note.questionBoxes,
     choices: note.choices,
     answer: note.answer,
     explanation: note.explanation,
