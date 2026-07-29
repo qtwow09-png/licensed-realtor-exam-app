@@ -1,15 +1,13 @@
-import { sampleQuestions } from '../data/sampleQuestions';
-import type { ChoiceNumber, ExamMode, Question, QuestionCategory, ReleasedRoundMeta, Subject } from '../types/exam';
+import { releasedExamQuestions } from '../data/releasedExamQuestions';
+import type { ChoiceNumber, ExamMode, Question, Subject, SubSubject } from '../types/exam';
 
-const targetByCategory: Record<QuestionCategory, number> = {
-  recent_frequent: 16,
-  past: 8,
-  issue: 4,
-  trap: 8,
-  easy: 4,
+const registryTaxTargets: Record<SubSubject, number> = {
+  중개사법: 0,
+  공법: 0,
+  지적법: 12,
+  등기법: 12,
+  세법: 16,
 };
-
-const lastPaperFingerprintByMode: Partial<Record<ExamMode, string>> = {};
 
 function randomIndex(max: number): number {
   if (max <= 0) {
@@ -50,59 +48,6 @@ function shuffleChoices(question: Question): Pick<Question, 'choices' | 'answer'
   };
 }
 
-function makeSessionVariant(
-  question: Question,
-  index: number,
-  displayStart: number,
-  roundMeta?: ReleasedRoundMeta,
-): Question {
-  const choiceVariant = shuffleChoices(question);
-  const lawUpdatePrefix = roundMeta
-    ? `[${roundMeta.title}] ${roundMeta.lawBasis}. `
-    : '';
-
-  return {
-    ...question,
-    ...choiceVariant,
-    id: `${question.id}-round-${roundMeta?.round ?? question.sourceRound}-run-${Date.now()}-${index}-${randomIndex(100000)}`,
-    originQuestionId: question.originQuestionId ?? question.id,
-    sourceRound: roundMeta?.round ?? question.sourceRound,
-    sourceYear: roundMeta?.year ?? question.sourceYear,
-    sourceType: roundMeta ? 'modified' : question.sourceType,
-    sourceTitle: roundMeta?.title ?? question.sourceTitle,
-    lawUpdateNote: roundMeta?.note ?? question.lawUpdateNote,
-    examNumber: index + 1,
-    displayNumber: displayStart + index,
-    explanation: `${lawUpdatePrefix}${question.explanation}`,
-  };
-}
-
-function takeSubjectQuestions(subject: Subject, roundMeta?: ReleasedRoundMeta): Question[] {
-  const candidates = sampleQuestions.filter((question) => question.subject === subject);
-  const selected: Question[] = [];
-  const roundOffset = roundMeta ? roundMeta.round % 7 : 0;
-
-  Object.entries(targetByCategory).forEach(([category, targetCount]) => {
-    const categoryQuestions = shuffle(
-      candidates.filter((question) => question.category === category),
-    );
-    const rotatedQuestions = [
-      ...categoryQuestions.slice(roundOffset),
-      ...categoryQuestions.slice(0, roundOffset),
-    ];
-    selected.push(...rotatedQuestions.slice(0, targetCount));
-  });
-
-  const selectedIds = new Set(selected.map((question) => question.id));
-  const fillers = shuffle(candidates.filter((question) => !selectedIds.has(question.id)));
-
-  while (selected.length < 40 && fillers.length > 0) {
-    selected.push(fillers[selected.length % fillers.length]);
-  }
-
-  return shuffle(selected).slice(0, 40);
-}
-
 function displayStartFor(mode: ExamMode, subject: Subject, subjectIndex: number): number {
   if (mode === 'first_period') {
     return subjectIndex === 0 ? 1 : 41;
@@ -115,29 +60,74 @@ function displayStartFor(mode: ExamMode, subject: Subject, subjectIndex: number)
   return 1;
 }
 
+function balancedSample(pool: Question[], targetCount: number): Question[] {
+  const rounds = shuffle(Array.from(new Set(pool.map((question) => question.sourceRound))).sort());
+  const baseCount = Math.floor(targetCount / rounds.length);
+  let remainder = targetCount % rounds.length;
+  const selected: Question[] = [];
+  const selectedIds = new Set<string>();
+
+  rounds.forEach((round) => {
+    const target = baseCount + (remainder > 0 ? 1 : 0);
+    remainder -= 1;
+    const roundQuestions = shuffle(pool.filter((question) => question.sourceRound === round));
+    roundQuestions.slice(0, target).forEach((question) => {
+      selected.push(question);
+      selectedIds.add(question.id);
+    });
+  });
+
+  if (selected.length < targetCount) {
+    shuffle(pool.filter((question) => !selectedIds.has(question.id)))
+      .slice(0, targetCount - selected.length)
+      .forEach((question) => selected.push(question));
+  }
+
+  return selected.slice(0, targetCount);
+}
+
+function takeSubjectQuestions(subject: Subject): Question[] {
+  const subjectQuestions = releasedExamQuestions.filter((question) => question.subject === subject);
+
+  if (subject === '공시세법') {
+    return shuffle(
+      (['지적법', '등기법', '세법'] as SubSubject[]).flatMap((subSubject) => (
+        balancedSample(
+          subjectQuestions.filter((question) => question.subSubject === subSubject),
+          registryTaxTargets[subSubject],
+        )
+      )),
+    );
+  }
+
+  return shuffle(balancedSample(subjectQuestions, 40));
+}
+
+function makeSessionQuestion(question: Question, index: number, displayStart: number): Question {
+  const choiceVariant = shuffleChoices(question);
+
+  return {
+    ...question,
+    ...choiceVariant,
+    id: `${question.id}-run-${Date.now()}-${index}-${randomIndex(100000)}`,
+    originQuestionId: question.id,
+    sourceType: question.isLawUpdated ? 'modified' : 'original',
+    sourceTitle: `제${question.sourceRound}회 실제 기출`,
+    lawUpdateNote: question.isLawUpdated
+      ? question.lawUpdateDescription
+      : question.lawUpdateNote,
+    displayNumber: displayStart + index,
+  };
+}
+
 export function buildExamPaper(options: {
   mode: ExamMode;
   subjects: Subject[];
-  roundMeta?: ReleasedRoundMeta;
 }): Question[] {
-  let paper: Question[] = [];
-  let fingerprint = '';
-  let attempts = 0;
-
-  do {
-    attempts += 1;
-    paper = options.subjects.flatMap((subject, subjectIndex) => {
-      const startNumber = displayStartFor(options.mode, subject, subjectIndex);
-      return takeSubjectQuestions(subject, options.roundMeta).map((question, index) => (
-        makeSessionVariant(question, index, startNumber, options.roundMeta)
-      ));
-    });
-    fingerprint = paper
-      .map((question) => `${question.subject}:${question.topic}:${question.answer}:${question.choices.join('|')}`)
-      .join('::');
-  } while (fingerprint === lastPaperFingerprintByMode[options.mode] && attempts < 5);
-
-  lastPaperFingerprintByMode[options.mode] = fingerprint;
-
-  return paper;
+  return options.subjects.flatMap((subject, subjectIndex) => {
+    const startNumber = displayStartFor(options.mode, subject, subjectIndex);
+    return takeSubjectQuestions(subject).map((question, index) => (
+      makeSessionQuestion(question, index, startNumber)
+    ));
+  });
 }

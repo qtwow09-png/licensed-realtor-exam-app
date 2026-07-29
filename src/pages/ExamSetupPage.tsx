@@ -34,9 +34,21 @@ export function ExamSetupPage({
   return (
     <main className="setupPage">
       <section className="setupIntro">
-        <p className="eyebrow">MVP 모의시험</p>
+        <p className="eyebrow">실제 기출 풀이</p>
         <h1>공인중개사 2차 시험 대비 문제 풀이</h1>
-        <p>공개 기출의 반복 쟁점을 현행 법령 기준으로 보정한 시험지를 제한시간 안에 풀이합니다.</p>
+        <p>제30회부터 제36회까지 실제 공개 기출만 섞어 출제합니다. 새 문제를 만들지 않고 문항과 보기 순서만 바꿉니다.</p>
+      </section>
+      <section className="roundPicker" aria-label="혼합 출제 기준">
+        <div>
+          <strong>30~36회 혼합</strong>
+          <span>한 회차 40문항 고정 없이 실제 기출 풀에서 과목별로 섞어 출제합니다.</span>
+        </div>
+        <div className="roundRuleGroup">
+          <span>문항 랜덤</span>
+          <span>보기 랜덤</span>
+          <span>실제 기출만</span>
+          <span>공시 12/12/세법 16</span>
+        </div>
       </section>
       <section className="modeGrid" aria-label="시험 모드 선택">
         {(Object.keys(examConfigs) as ExamMode[]).map((mode) => {
@@ -54,7 +66,7 @@ export function ExamSetupPage({
               <Icon size={24} />
               <strong>{config.title}</strong>
               <span>{config.subjects.join(' + ')}</span>
-              <em>{config.durationMinutes}분 · {config.subjects.length * 40}문항 · 회차 순환</em>
+              <em>{config.durationMinutes}분 · {config.subjects.length * 40}문항 · 30~36회 혼합</em>
             </button>
           );
         })}

@@ -5,6 +5,7 @@ const releasedRoundStoragePrefixes = [
   'licensed-realtor-exam-next-released-round',
   'licensed-realtor-exam-random-round-queue',
   'licensed-realtor-exam-last-random-round',
+  'licensed-realtor-exam-selected-round',
 ];
 
 const subjects: Subject[] = ['중개사법', '공법', '공시세법'];
@@ -55,6 +56,11 @@ function noteFromResult(result: QuestionResult, now: string): WrongNote {
     sourceYear: question.sourceYear,
     sourceTitle: question.sourceTitle,
     lawUpdateNote: question.lawUpdateNote,
+    subSubject: question.subSubject,
+    originalSource: question.originalSource,
+    isLawUpdated: question.isLawUpdated,
+    lawUpdateDescription: question.lawUpdateDescription,
+    needsReview: question.needsReview,
     trapType: question.trapType,
     wrongCount: 1,
     correctCount: 0,
@@ -90,6 +96,11 @@ export function recordWrongNotes(score: ExamScore): void {
         answer: result.question.answer,
         explanation: result.question.explanation,
         lawUpdateNote: result.question.lawUpdateNote,
+        subSubject: result.question.subSubject,
+        originalSource: result.question.originalSource,
+        isLawUpdated: result.question.isLawUpdated,
+        lawUpdateDescription: result.question.lawUpdateDescription,
+        needsReview: result.question.needsReview,
         sourceTitle: result.question.sourceTitle,
         wrongCount: (existing?.wrongCount ?? 0) + 1,
         lastSelectedChoice: result.selectedChoice,
@@ -150,6 +161,11 @@ export function buildWrongReviewQuestions(): Question[] {
     answer: note.answer,
     explanation: note.explanation,
     lawUpdateNote: note.lawUpdateNote,
+    subSubject: note.subSubject,
+    originalSource: note.originalSource,
+    isLawUpdated: note.isLawUpdated,
+    lawUpdateDescription: note.lawUpdateDescription,
+    needsReview: note.needsReview,
     sourceTitle: note.sourceTitle,
   }));
 }
