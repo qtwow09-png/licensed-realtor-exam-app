@@ -90,26 +90,21 @@ button {
   font-size: 14px;
 }
 
-.roundButtonGroup {
+.roundRuleGroup {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
-.roundButtonGroup button {
+.roundRuleGroup span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 42px;
-  border: 1px solid #cfd7e2;
   border-radius: 8px;
-  background: #f8fafc;
-  color: #273246;
-  cursor: pointer;
-  font-weight: 900;
-}
-
-.roundButtonGroup button.active {
-  border-color: #1f6f4a;
   background: #1f6f4a;
   color: #fff;
+  font-weight: 900;
 }
 
 .modeCard {

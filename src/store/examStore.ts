@@ -1,5 +1,5 @@
-import { latestReleasedRound, releasedRoundByNumber } from '../data/releasedRounds';
-import type { ChoiceNumber, ExamConfig, ExamMode, ExamSession, ReleasedRoundMeta, Subject, UserAnswer } from '../types/exam';
+import { mixedReleasedRoundMeta } from '../data/releasedRounds';
+import type { ChoiceNumber, ExamConfig, ExamMode, ExamSession, Subject, UserAnswer } from '../types/exam';
 import { buildExamPaper } from '../utils/buildExamPaper';
 import { buildWrongReviewQuestions } from '../utils/wrongNoteStore';
 
@@ -30,41 +30,13 @@ export const examConfigs: Record<ExamMode, ExamConfig> = {
   },
 };
 
-const roundStoragePrefix = 'licensed-realtor-exam-selected-round';
-
-function storageKey(mode: ExamMode): string {
-  return `${roundStoragePrefix}:${mode}`;
-}
-
-export function readSelectedRound(mode: ExamMode): number {
-  if (typeof window === 'undefined') {
-    return latestReleasedRound().round;
-  }
-
-  const storedRound = Number(window.localStorage.getItem(storageKey(mode)));
-  return Number.isFinite(storedRound) && storedRound > 0
-    ? releasedRoundByNumber(storedRound).round
-    : latestReleasedRound().round;
-}
-
-export function writeSelectedRound(mode: ExamMode, round: number): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window.localStorage.setItem(storageKey(mode), String(releasedRoundByNumber(round).round));
-}
-
-export function createExamSession(mode: ExamMode, round: number): ExamSession {
+export function createExamSession(mode: ExamMode): ExamSession {
   const config = examConfigs[mode];
-  const roundMeta = releasedRoundByNumber(round);
-  const questions = buildExamPaper({ mode, subjects: config.subjects, roundMeta });
-  writeSelectedRound(mode, roundMeta.round);
+  const questions = buildExamPaper({ mode, subjects: config.subjects });
 
   return {
     config,
-    roundMeta,
-    selectedRound: roundMeta.round,
+    roundMeta: mixedReleasedRoundMeta,
     questions,
     answers: {},
     currentIndex: 0,
