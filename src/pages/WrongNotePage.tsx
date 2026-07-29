@@ -20,7 +20,19 @@ function formatDate(value: string): string {
   }).format(new Date(value));
 }
 
+function getChoiceText(note: WrongNote, choice?: number): string {
+  if (!choice) {
+    return '선택하지 않음';
+  }
+
+  return note.choices[choice - 1] ?? '지문 정보 없음';
+}
+
 function WrongNoteItem({ note }: { note: WrongNote }) {
+  const selectedChoice = note.lastSelectedChoice;
+  const selectedLabel = selectedChoice ? choiceLabels[selectedChoice] : '미응답';
+  const answerLabel = choiceLabels[note.answer];
+
   return (
     <article className="wrongNoteItem">
       <div className="wrongNoteHead">
@@ -34,11 +46,27 @@ function WrongNoteItem({ note }: { note: WrongNote }) {
         </div>
       </div>
       <p className="wrongQuestionText">{note.questionText}</p>
+      {note.questionBoxes?.map((box, index) => (
+        <div className="questionExampleBox" key={`${note.questionId}-box-${index}`}>
+          {box.title && <strong className="questionBoxTitle">〈{box.title}〉</strong>}
+          {box.lines.map((line, lineIndex) => (
+            <p key={`${lineIndex}-${line}`}>{line}</p>
+          ))}
+          {box.footer && <p className="questionBoxFooter">{box.footer}</p>}
+        </div>
+      ))}
       {note.lawRef && <p className="lawRef">{note.lawRef}</p>}
       <div className="answerCompare">
-        <span>최근 선택: {choiceLabels[note.lastSelectedChoice ?? 0]}</span>
-        <span>정답: {choiceLabels[note.answer]}</span>
+        <div>
+          <strong>내가 고른 답: {selectedLabel}</strong>
+          <p>{getChoiceText(note, selectedChoice)}</p>
+        </div>
+        <div>
+          <strong>정답: {answerLabel}</strong>
+          <p>{getChoiceText(note, note.answer)}</p>
+        </div>
       </div>
+      {note.lawUpdateNote && <p className="lawUpdateNote">2026년 현행법 반영: {note.lawUpdateNote}</p>}
       <p className="explanation">{note.explanation}</p>
     </article>
   );
@@ -52,7 +80,7 @@ export function WrongNotePage({ onBack, onStartWrongReview, onResetProgress }: W
     <main className="wrongNotePage">
       <section className="wrongNoteHero">
         <p className="eyebrow">오답노트</p>
-        <h1>반복해서 틀리는 문제부터 다시 봅니다.</h1>
+        <h1>내가 고른 지문과 실제 정답 지문을 바로 비교합니다.</h1>
         <div className="wrongNoteActions">
           <button className="secondaryActionButton" type="button" onClick={onBack}>
             <ArrowLeft size={18} />

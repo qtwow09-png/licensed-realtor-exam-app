@@ -13,6 +13,12 @@ export type SourceType = 'original' | 'modified' | 'predicted' | 'weak_review';
 
 export type ChoiceNumber = 1 | 2 | 3 | 4 | 5;
 
+export type QuestionBox = {
+  title?: string;
+  lines: string[];
+  footer?: string;
+};
+
 export type Question = {
   id: string;
   originQuestionId?: string;
@@ -31,6 +37,7 @@ export type Question = {
   issueScore?: number;
   trapType?: string;
   questionText: string;
+  questionBoxes?: QuestionBox[];
   choices: [string, string, string, string, string];
   answer: ChoiceNumber;
   explanation: string;
@@ -107,6 +114,7 @@ export type WrongNote = {
   topic: string;
   lawRef?: string;
   questionText: string;
+  questionBoxes?: QuestionBox[];
   choices: [string, string, string, string, string];
   answer: ChoiceNumber;
   explanation: string;
