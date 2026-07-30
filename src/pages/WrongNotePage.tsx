@@ -11,6 +11,14 @@ type WrongNotePageProps = {
 const subjects: Subject[] = ['중개사법', '공법', '공시세법'];
 const choiceLabels = ['-', '①', '②', '③', '④', '⑤'];
 
+function choiceText(note: WrongNote, choice?: number): string {
+  if (!choice || choice < 1 || choice > 5) {
+    return '선택하지 않음';
+  }
+
+  return note.choices[choice - 1] ?? '선택지 확인 필요';
+}
+
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat('ko-KR', {
     month: '2-digit',
@@ -35,9 +43,15 @@ function WrongNoteItem({ note }: { note: WrongNote }) {
       </div>
       <p className="wrongQuestionText">{note.questionText}</p>
       {note.lawRef && <p className="lawRef">{note.lawRef}</p>}
-      <div className="answerCompare">
-        <span>최근 선택: {choiceLabels[note.lastSelectedChoice ?? 0]}</span>
-        <span>정답: {choiceLabels[note.answer]}</span>
+      <div className="wrongChoiceCompare">
+        <div>
+          <span>최근 선택 {choiceLabels[note.lastSelectedChoice ?? 0]}</span>
+          <p>{choiceText(note, note.lastSelectedChoice)}</p>
+        </div>
+        <div>
+          <span>정답 {choiceLabels[note.answer]}</span>
+          <p>{choiceText(note, note.answer)}</p>
+        </div>
       </div>
       <p className="explanation">{note.explanation}</p>
     </article>

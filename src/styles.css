@@ -973,6 +973,37 @@ button {
   font-weight: 800;
 }
 
+.wrongChoiceCompare {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.wrongChoiceCompare div {
+  padding: 10px 12px;
+  border: 1px solid #e1e6ee;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.wrongChoiceCompare span {
+  display: block;
+  margin-bottom: 5px;
+  color: #1f6f4a;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.wrongChoiceCompare div:first-child span {
+  color: #c94929;
+}
+
+.wrongChoiceCompare p {
+  margin: 0;
+  color: #263244;
+  line-height: 1.55;
+}
+
 .explanation {
   color: #4f5d70;
   line-height: 1.65;

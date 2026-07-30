@@ -90,14 +90,14 @@ function takeSubjectQuestions(subject: Subject): Question[] {
   const subjectQuestions = releasedExamQuestions.filter((question) => question.subject === subject);
 
   if (subject === '공시세법') {
-    return shuffle(
-      (['지적법', '등기법', '세법'] as SubSubject[]).flatMap((subSubject) => (
+    return (['지적법', '등기법', '세법'] as SubSubject[]).flatMap((subSubject) => (
+      shuffle(
         balancedSample(
           subjectQuestions.filter((question) => question.subSubject === subSubject),
           registryTaxTargets[subSubject],
-        )
-      )),
-    );
+        ),
+      )
+    ));
   }
 
   return shuffle(balancedSample(subjectQuestions, 40));

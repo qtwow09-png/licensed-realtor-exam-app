@@ -7,24 +7,44 @@ type QuestionPanelProps = {
 };
 
 const choiceLabels = ['①', '②', '③', '④', '⑤'];
-const itemMarkerPattern = /\s(?=ㄱ\.\s?)/;
 
 function splitQuestionText(questionText: string): {
   stem: string;
   examples: string[];
 } {
-  const [stem, itemText] = questionText.split(itemMarkerPattern, 2);
+  const itemMatch = questionText.match(/\s(?=ㄱ[.．]\s?)/);
 
-  if (!itemText) {
-    return { stem: questionText, examples: [] };
+  if (itemMatch?.index !== undefined) {
+    const stem = questionText.slice(0, itemMatch.index).trim();
+    const itemText = questionText.slice(itemMatch.index).trim();
+
+    return {
+      stem,
+      examples: itemText
+        .split(/\s+(?=[ㄱㄴㄷㄹㅁㅂ][.．]\s?)/)
+        .map((item) => item.trim())
+        .filter(Boolean),
+    };
+  }
+
+  const circleMatch = questionText.match(/\s(?=○\s?)/);
+
+  if (circleMatch?.index !== undefined) {
+    const stem = questionText.slice(0, circleMatch.index).trim();
+    const itemText = questionText.slice(circleMatch.index).trim();
+
+    return {
+      stem,
+      examples: itemText
+        .split(/\s+(?=○\s?)/)
+        .map((item) => item.trim())
+        .filter(Boolean),
+    };
   }
 
   return {
-    stem,
-    examples: itemText
-      .split(/\s+(?=[ㄱㄴㄷㄹㅁㅂ]\.\s?)/)
-      .map((item) => item.trim())
-      .filter(Boolean),
+    stem: questionText,
+    examples: [],
   };
 }
 
