@@ -1,4 +1,12 @@
-import type { ExamScore, Question, QuestionResult, Subject, WrongNote } from '../types/exam';
+import type {
+  ChoiceNumber,
+  ExamScore,
+  Question,
+  QuestionResult,
+  Subject,
+  WrongNote,
+  WrongNoteAttempt,
+} from '../types/exam';
 
 const wrongNotesStorageKey = 'licensed-realtor-exam-wrong-notes';
 const releasedRoundStoragePrefixes = [
@@ -7,11 +15,41 @@ const releasedRoundStoragePrefixes = [
   'licensed-realtor-exam-last-random-round',
   'licensed-realtor-exam-selected-round',
 ];
+const maxStoredAttempts = 50;
+const masteryStreakTarget = 2;
+const smartReviewLimit = 20;
 
 const subjects: Subject[] = ['중개사법', '공법', '공시세법'];
 
+export type WrongNoteStats = {
+  total: number;
+  active: number;
+  mastered: number;
+  repeatWrong: number;
+  attemptsLast7Days: number;
+  attemptsLast30Days: number;
+};
+
+export type WeakTopic = {
+  subject: Subject;
+  chapter: string;
+  wrongCount: number;
+  questionCount: number;
+};
+
 function canUseStorage(): boolean {
   return typeof window !== 'undefined' && Boolean(window.localStorage);
+}
+
+function normalizeNote(note: WrongNote): WrongNote {
+  const correctStreak = note.correctStreak ?? 0;
+
+  return {
+    ...note,
+    attempts: Array.isArray(note.attempts) ? note.attempts.slice(-maxStoredAttempts) : [],
+    correctStreak,
+    status: note.status ?? (correctStreak >= masteryStreakTarget ? 'mastered' : 'active'),
+  };
 }
 
 function readMap(): Record<string, WrongNote> {
@@ -21,7 +59,14 @@ function readMap(): Record<string, WrongNote> {
 
   try {
     const rawNotes = window.localStorage.getItem(wrongNotesStorageKey);
-    return rawNotes ? JSON.parse(rawNotes) as Record<string, WrongNote> : {};
+    if (!rawNotes) {
+      return {};
+    }
+
+    const parsed = JSON.parse(rawNotes) as Record<string, WrongNote>;
+    return Object.fromEntries(
+      Object.entries(parsed).map(([questionId, note]) => [questionId, normalizeNote(note)]),
+    );
   } catch {
     return {};
   }
@@ -37,6 +82,21 @@ function writeMap(notes: Record<string, WrongNote>): void {
 
 function stableQuestionId(question: Question): string {
   return question.originQuestionId ?? question.id.split('-round-')[0];
+}
+
+function appendAttempt(
+  note: WrongNote,
+  result: QuestionResult,
+  now: string,
+): WrongNoteAttempt[] {
+  return [
+    ...(note.attempts ?? []),
+    {
+      at: now,
+      selectedChoice: result.selectedChoice as ChoiceNumber | undefined,
+      isCorrect: result.isCorrect,
+    },
+  ].slice(-maxStoredAttempts);
 }
 
 function noteFromResult(result: QuestionResult, now: string): WrongNote {
@@ -62,10 +122,13 @@ function noteFromResult(result: QuestionResult, now: string): WrongNote {
     lawUpdateDescription: question.lawUpdateDescription,
     needsReview: question.needsReview,
     trapType: question.trapType,
-    wrongCount: 1,
+    wrongCount: 0,
     correctCount: 0,
+    correctStreak: 0,
+    status: 'active',
     lastSelectedChoice: result.selectedChoice,
     lastWrongAt: now,
+    attempts: [],
   };
 }
 
@@ -103,17 +166,24 @@ export function recordWrongNotes(score: ExamScore): void {
         needsReview: result.question.needsReview,
         sourceTitle: result.question.sourceTitle,
         wrongCount: (existing?.wrongCount ?? 0) + 1,
+        correctStreak: 0,
+        status: 'active',
         lastSelectedChoice: result.selectedChoice,
         lastWrongAt: now,
+        attempts: appendAttempt(nextNote, result, now),
       };
       return;
     }
 
     if (existing) {
+      const correctStreak = (existing.correctStreak ?? 0) + 1;
       notes[questionId] = {
         ...existing,
         correctCount: existing.correctCount + 1,
+        correctStreak,
+        status: correctStreak >= masteryStreakTarget ? 'mastered' : 'active',
         lastCorrectAt: now,
+        attempts: appendAttempt(existing, result, now),
       };
     }
   });
@@ -128,46 +198,95 @@ export function getWrongNotes(subject?: Subject): WrongNote[] {
   return sortNotes(filteredNotes);
 }
 
+export function getActiveWrongNotes(subject?: Subject): WrongNote[] {
+  return getWrongNotes(subject).filter((note) => note.status !== 'mastered');
+}
+
+export function getMasteredWrongNotes(): WrongNote[] {
+  return getWrongNotes().filter((note) => note.status === 'mastered');
+}
+
 export function getWrongNoteCount(): number {
-  return Object.keys(readMap()).length;
+  return getActiveWrongNotes().length;
 }
 
 export function getWrongNoteCountsBySubject(): Record<Subject, number> {
   return subjects.reduce((counts, subject) => ({
     ...counts,
-    [subject]: getWrongNotes(subject).length,
+    [subject]: getActiveWrongNotes(subject).length,
   }), {} as Record<Subject, number>);
 }
 
+export function getWrongNoteStats(): WrongNoteStats {
+  const notes = getWrongNotes();
+  const now = Date.now();
+  const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+  const attempts = notes.flatMap((note) => note.attempts ?? []);
+
+  return {
+    total: notes.length,
+    active: notes.filter((note) => note.status !== 'mastered').length,
+    mastered: notes.filter((note) => note.status === 'mastered').length,
+    repeatWrong: notes.filter((note) => note.wrongCount >= 2).length,
+    attemptsLast7Days: attempts.filter((attempt) => new Date(attempt.at).getTime() >= sevenDaysAgo).length,
+    attemptsLast30Days: attempts.filter((attempt) => new Date(attempt.at).getTime() >= thirtyDaysAgo).length,
+  };
+}
+
+export function getWeakTopics(limit = 5): WeakTopic[] {
+  const topicMap = new Map<string, WeakTopic>();
+
+  getActiveWrongNotes().forEach((note) => {
+    const key = `${note.subject}::${note.chapter}`;
+    const existing = topicMap.get(key);
+
+    topicMap.set(key, {
+      subject: note.subject,
+      chapter: note.chapter,
+      wrongCount: (existing?.wrongCount ?? 0) + note.wrongCount,
+      questionCount: (existing?.questionCount ?? 0) + 1,
+    });
+  });
+
+  return Array.from(topicMap.values())
+    .sort((left, right) => (
+      right.wrongCount - left.wrongCount || right.questionCount - left.questionCount
+    ))
+    .slice(0, limit);
+}
+
 export function buildWrongReviewQuestions(): Question[] {
-  return getWrongNotes().map((note, index) => ({
-    id: `${note.questionId}-wrong-review-${Date.now()}-${index}`,
-    originQuestionId: note.questionId,
-    sourceRound: note.sourceRound,
-    sourceYear: note.sourceYear,
-    subject: note.subject,
-    examNumber: index + 1,
-    displayNumber: index + 1,
-    chapter: note.chapter,
-    topic: note.topic,
-    lawRef: note.lawRef,
-    difficulty: note.wrongCount >= 3 ? 'trap' : 'hard',
-    sourceType: 'weak_review',
-    category: 'trap',
-    frequencyScore: Math.min(100, 70 + note.wrongCount * 5),
-    trapType: note.trapType,
-    questionText: note.questionText,
-    choices: note.choices,
-    answer: note.answer,
-    explanation: note.explanation,
-    lawUpdateNote: note.lawUpdateNote,
-    subSubject: note.subSubject,
-    originalSource: note.originalSource,
-    isLawUpdated: note.isLawUpdated,
-    lawUpdateDescription: note.lawUpdateDescription,
-    needsReview: note.needsReview,
-    sourceTitle: note.sourceTitle,
-  }));
+  return getActiveWrongNotes()
+    .slice(0, smartReviewLimit)
+    .map((note, index) => ({
+      id: `${note.questionId}-wrong-review-${Date.now()}-${index}`,
+      originQuestionId: note.questionId,
+      sourceRound: note.sourceRound,
+      sourceYear: note.sourceYear,
+      subject: note.subject,
+      examNumber: index + 1,
+      displayNumber: index + 1,
+      chapter: note.chapter,
+      topic: note.topic,
+      lawRef: note.lawRef,
+      difficulty: note.wrongCount >= 3 ? 'trap' : 'hard',
+      sourceType: 'weak_review',
+      category: 'trap',
+      frequencyScore: Math.min(100, 70 + note.wrongCount * 5),
+      trapType: note.trapType,
+      questionText: note.questionText,
+      choices: note.choices,
+      answer: note.answer,
+      explanation: note.explanation,
+      lawUpdateNote: note.lawUpdateNote,
+      subSubject: note.subSubject,
+      originalSource: note.originalSource,
+      isLawUpdated: note.isLawUpdated,
+      lawUpdateDescription: note.lawUpdateDescription,
+      needsReview: note.needsReview,
+      sourceTitle: note.sourceTitle,
+    }));
 }
 
 export function resetStudyData(): void {
