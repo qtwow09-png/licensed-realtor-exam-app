@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const dataPath = path.resolve('src/data/releasedExamQuestions.json');
 const questions = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-const rounds = [30, 31, 32, 33, 34, 35, 36];
+const rounds = Array.from({ length: 17 }, (_, index) => index + 20);
 const subjects = ['중개사법', '공법', '공시세법'];
 const failures = [];
 
@@ -72,8 +72,8 @@ for (const round of rounds) {
   }
 }
 
-if (questions.length !== 840) {
-  fail(`전체 문항 수 ${questions.length}, 기대값 840`);
+if (questions.length !== 2040) {
+  fail(`전체 문항 수 ${questions.length}, 기대값 2040`);
 }
 
 if (failures.length > 0) {
@@ -81,4 +81,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log('released exam validation passed: 7 rounds, 840 questions');
+console.log('released exam validation passed: 17 rounds, 2040 questions');
