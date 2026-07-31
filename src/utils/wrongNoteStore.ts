@@ -46,6 +46,8 @@ function normalizeNote(note: WrongNote): WrongNote {
 
   return {
     ...note,
+    wrongCount: Number.isFinite(note.wrongCount) ? note.wrongCount : 0,
+    correctCount: Number.isFinite(note.correctCount) ? note.correctCount : 0,
     attempts: Array.isArray(note.attempts) ? note.attempts.slice(-maxStoredAttempts) : [],
     correctStreak,
     status: note.status ?? (correctStreak >= masteryStreakTarget ? 'mastered' : 'active'),
@@ -77,7 +79,11 @@ function writeMap(notes: Record<string, WrongNote>): void {
     return;
   }
 
-  window.localStorage.setItem(wrongNotesStorageKey, JSON.stringify(notes));
+  try {
+    window.localStorage.setItem(wrongNotesStorageKey, JSON.stringify(notes));
+  } catch {
+    // 저장 공간이 일시적으로 부족해도 풀이 화면은 계속 사용할 수 있게 합니다.
+  }
 }
 
 function stableQuestionId(question: Question): string {
