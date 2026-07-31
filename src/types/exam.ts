@@ -14,6 +14,14 @@ export type SourceType = 'original' | 'modified' | 'predicted' | 'weak_review';
 
 export type ChoiceNumber = 1 | 2 | 3 | 4 | 5;
 
+export type WrongNoteStatus = 'active' | 'mastered';
+
+export type WrongNoteAttempt = {
+  at: string;
+  selectedChoice?: ChoiceNumber;
+  isCorrect: boolean;
+};
+
 export type Question = {
   id: string;
   originQuestionId?: string;
@@ -132,4 +140,7 @@ export type WrongNote = {
   lastSelectedChoice?: ChoiceNumber;
   lastWrongAt: string;
   lastCorrectAt?: string;
+  attempts?: WrongNoteAttempt[];
+  correctStreak?: number;
+  status?: WrongNoteStatus;
 };

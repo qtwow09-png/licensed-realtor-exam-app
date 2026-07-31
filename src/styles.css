@@ -1106,3 +1106,146 @@ button {
   color: #263244;
   line-height: 1.55;
 }
+
+
+.wrongNotePersistence {
+  margin: 12px 0 0;
+  color: #566274;
+  line-height: 1.6;
+}
+
+.wrongNoteSummary {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.wrongNoteSummary div {
+  padding: 16px;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.wrongNoteSummary span,
+.wrongNoteSummary strong {
+  display: block;
+}
+
+.wrongNoteSummary span {
+  color: #647084;
+  font-size: 13px;
+}
+
+.wrongNoteSummary strong {
+  margin-top: 6px;
+  color: #1f6f4a;
+  font-size: 25px;
+}
+
+.weakTopicPanel {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 20px;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.weakTopicPanel h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.weakTopicList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.weakTopicList > span {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f3f6f9;
+  color: #263244;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.weakTopicList strong {
+  display: block;
+  margin-top: 3px;
+  color: #c94929;
+  font-size: 12px;
+}
+
+.wrongNoteViewTabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.wrongNoteViewTabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #cfd7e2;
+  border-radius: 8px;
+  background: #fff;
+  color: #526071;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.wrongNoteViewTabs button.active {
+  border-color: #1f6f4a;
+  background: #e7f1eb;
+  color: #1f6f4a;
+}
+
+.wrongNoteViewTabs span {
+  min-width: 25px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #edf1f6;
+  color: #526071;
+  font-size: 12px;
+  text-align: center;
+}
+
+.wrongNoteItem {
+  padding: 0;
+}
+
+.wrongNoteHead {
+  position: relative;
+  padding: 15px 28px 15px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.wrongNoteHead::-webkit-details-marker {
+  display: none;
+}
+
+.wrongNoteChevron {
+  position: absolute;
+  right: 0;
+  top: 18px;
+  color: #8a96a8;
+  transition: transform 0.15s ease;
+}
+
+.wrongNoteItem[open] .wrongNoteChevron {
+  transform: rotate(180deg);
+}
+
+.wrongNoteBody {
+  padding: 0 0 16px;
+}
