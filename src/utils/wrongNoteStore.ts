@@ -26,6 +26,7 @@ export type WrongNoteStats = {
   active: number;
   mastered: number;
   repeatWrong: number;
+  keyMemory: number;
   attemptsLast7Days: number;
   attemptsLast30Days: number;
 };
@@ -126,6 +127,8 @@ function noteFromResult(result: QuestionResult, now: string): WrongNote {
     choices: question.choices,
     answer: question.answer,
     explanation: question.explanation,
+    explanationVerified: question.explanationVerified,
+    explanationSource: question.explanationSource,
     sourceRound: question.sourceRound,
     sourceYear: question.sourceYear,
     sourceTitle: question.sourceTitle,
@@ -176,6 +179,8 @@ export function recordWrongNotes(score: ExamScore): void {
         choices: result.question.choices,
         answer: result.question.answer,
         explanation: result.question.explanation,
+        explanationVerified: result.question.explanationVerified,
+        explanationSource: result.question.explanationSource,
         lawUpdateNote: result.question.lawUpdateNote,
         subSubject: result.question.subSubject,
         originalSource: result.question.originalSource,
@@ -224,6 +229,10 @@ export function getMasteredWrongNotes(): WrongNote[] {
   return getWrongNotes().filter((note) => note.status === 'mastered');
 }
 
+export function getKeyMemoryWrongNotes(): WrongNote[] {
+  return getWrongNotes().filter((note) => note.wrongCount >= 3);
+}
+
 export function getWrongNoteCount(): number {
   return getActiveWrongNotes().length;
 }
@@ -247,6 +256,7 @@ export function getWrongNoteStats(): WrongNoteStats {
     active: notes.filter((note) => note.status !== 'mastered').length,
     mastered: notes.filter((note) => note.status === 'mastered').length,
     repeatWrong: notes.filter((note) => note.wrongCount >= 2).length,
+    keyMemory: notes.filter((note) => note.wrongCount >= 3).length,
     attemptsLast7Days: attempts.filter((attempt) => new Date(attempt.at).getTime() >= sevenDaysAgo).length,
     attemptsLast30Days: attempts.filter((attempt) => new Date(attempt.at).getTime() >= thirtyDaysAgo).length,
   };
@@ -297,6 +307,8 @@ export function buildWrongReviewQuestions(): Question[] {
       choices: note.choices,
       answer: note.answer,
       explanation: note.explanation,
+      explanationVerified: note.explanationVerified,
+      explanationSource: note.explanationSource,
       lawUpdateNote: note.lawUpdateNote,
       subSubject: note.subSubject,
       originalSource: note.originalSource,
@@ -317,3 +329,4 @@ export function resetStudyData(): void {
     .filter((key) => releasedRoundStoragePrefixes.some((prefix) => key.startsWith(prefix)))
     .forEach((key) => window.localStorage.removeItem(key));
 }
+
