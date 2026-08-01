@@ -26,6 +26,7 @@ export type WrongNoteStats = {
   active: number;
   mastered: number;
   repeatWrong: number;
+  keyMemory: number;
   attemptsLast7Days: number;
   attemptsLast30Days: number;
 };
@@ -224,6 +225,10 @@ export function getMasteredWrongNotes(): WrongNote[] {
   return getWrongNotes().filter((note) => note.status === 'mastered');
 }
 
+export function getKeyMemoryWrongNotes(): WrongNote[] {
+  return getWrongNotes().filter((note) => note.wrongCount >= 3);
+}
+
 export function getWrongNoteCount(): number {
   return getActiveWrongNotes().length;
 }
@@ -247,6 +252,7 @@ export function getWrongNoteStats(): WrongNoteStats {
     active: notes.filter((note) => note.status !== 'mastered').length,
     mastered: notes.filter((note) => note.status === 'mastered').length,
     repeatWrong: notes.filter((note) => note.wrongCount >= 2).length,
+    keyMemory: notes.filter((note) => note.wrongCount >= 3).length,
     attemptsLast7Days: attempts.filter((attempt) => new Date(attempt.at).getTime() >= sevenDaysAgo).length,
     attemptsLast30Days: attempts.filter((attempt) => new Date(attempt.at).getTime() >= thirtyDaysAgo).length,
   };
@@ -317,3 +323,4 @@ export function resetStudyData(): void {
     .filter((key) => releasedRoundStoragePrefixes.some((prefix) => key.startsWith(prefix)))
     .forEach((key) => window.localStorage.removeItem(key));
 }
+
