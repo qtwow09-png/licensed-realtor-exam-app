@@ -44,6 +44,8 @@ export type Question = {
   choices: [string, string, string, string, string];
   answer: ChoiceNumber;
   explanation: string;
+  explanationVerified?: boolean;
+  explanationSource?: string;
   memoryNote?: string;
   lawUpdateNote?: string;
   sourceTitle?: string;
@@ -125,6 +127,8 @@ export type WrongNote = {
   choices: [string, string, string, string, string];
   answer: ChoiceNumber;
   explanation: string;
+  explanationVerified?: boolean;
+  explanationSource?: string;
   sourceRound: number;
   sourceYear?: number;
   sourceTitle?: string;
@@ -144,3 +148,4 @@ export type WrongNote = {
   correctStreak?: number;
   status?: WrongNoteStatus;
 };
+
