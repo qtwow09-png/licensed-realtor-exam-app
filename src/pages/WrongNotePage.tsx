@@ -140,7 +140,7 @@ export function WrongNotePage({ onBack, onStartWrongReview, onResetProgress }: W
           <h2>{view === 'active' ? '현재 복습할 오답이 없습니다.' : '아직 완료한 문제가 없습니다.'}</h2>
           <p>
             {view === 'active'
-              ? '시험을 제출하면 틀린 문제와 미답 문제가 자동으로 누적됩니다.'
+              ? '시험을 제출하면 답을 선택했지만 틀린 문제만 자동으로 누적됩니다.'
               : '오답 문제를 연속 2회 맞히면 이곳에 보관됩니다.'}
           </p>
         </section>
