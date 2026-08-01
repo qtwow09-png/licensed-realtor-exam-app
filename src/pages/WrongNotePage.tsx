@@ -41,8 +41,9 @@ function hasVerifiedDetailedExplanation(note: WrongNote): boolean {
   const explanation = note.explanation.trim();
 
   return Boolean(
-    note.lawRef?.trim()
-    && note.originalSource?.includes('Q-Net')
+    note.explanationVerified === true
+    && note.explanationSource?.trim()
+    && note.lawRef?.trim()
     && !note.needsReview
     && explanation
     && !explanation.includes('상세 법령 해설은 별도 검수 필요'),
@@ -63,6 +64,7 @@ function VerifiedAnswerExplanation({ note }: { note: WrongNote }) {
         <>
           <p className="explanation">{note.explanation}</p>
           <p className="keyEvidence">법령 근거: {note.lawRef}</p>
+          <p className="keyEvidence">해설 검증 출처: {note.explanationSource}</p>
         </>
       ) : (
         <p className="keyExplanationPending">
