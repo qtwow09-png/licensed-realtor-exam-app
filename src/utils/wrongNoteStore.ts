@@ -54,6 +54,12 @@ function normalizeNote(note: WrongNote): WrongNote {
   };
 }
 
+function hasAnsweredWrongAttempt(note: WrongNote): boolean {
+  return note.lastSelectedChoice !== undefined || Boolean(
+    note.attempts?.some((attempt) => !attempt.isCorrect && attempt.selectedChoice !== undefined),
+  );
+}
+
 function readMap(): Record<string, WrongNote> {
   if (!canUseStorage()) {
     return {};
@@ -67,7 +73,9 @@ function readMap(): Record<string, WrongNote> {
 
     const parsed = JSON.parse(rawNotes) as Record<string, WrongNote>;
     return Object.fromEntries(
-      Object.entries(parsed).map(([questionId, note]) => [questionId, normalizeNote(note)]),
+      Object.entries(parsed)
+        .filter(([, note]) => hasAnsweredWrongAttempt(note))
+        .map(([questionId, note]) => [questionId, normalizeNote(note)]),
     );
   } catch {
     return {};
@@ -153,6 +161,10 @@ export function recordWrongNotes(score: ExamScore): void {
   const now = new Date().toISOString();
 
   score.questionResults.forEach((result) => {
+    if (!result.isCorrect && result.selectedChoice === undefined) {
+      return;
+    }
+
     const questionId = stableQuestionId(result.question);
     const existing = notes[questionId];
 
