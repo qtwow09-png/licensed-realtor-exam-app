@@ -1116,7 +1116,7 @@ button {
 
 .wrongNoteSummary {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
   margin-top: 14px;
 }
@@ -1209,6 +1209,12 @@ button {
   color: #1f6f4a;
 }
 
+.wrongNoteViewTabs button.active.key {
+  border-color: #b06d0f;
+  background: #fff4d9;
+  color: #8a5208;
+}
+
 .wrongNoteViewTabs span {
   min-width: 25px;
   padding: 2px 7px;
@@ -1249,3 +1255,84 @@ button {
 .wrongNoteBody {
   padding: 0 0 16px;
 }
+
+.keyMemoryItem {
+  border-top-color: #e6c98f;
+}
+
+.keyChoiceList {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.keyChoiceList li {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid #e0e5ec;
+  border-radius: 7px;
+  color: #344154;
+  line-height: 1.5;
+}
+
+.keyChoiceList li.correct {
+  border-color: #73a888;
+  background: #edf7f1;
+  color: #174e34;
+  font-weight: 800;
+}
+
+.keyAnswerExplanation {
+  margin-top: 14px;
+  padding: 15px;
+  border: 1px solid #e0c17c;
+  border-radius: 8px;
+  background: #fffaf0;
+}
+
+.keyAnswerTitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.keyAnswerTitle strong {
+  color: #174e34;
+  font-size: 17px;
+}
+
+.keyAnswerTitle span {
+  color: #8a611e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.keyCorrectChoice {
+  margin: 10px 0;
+  color: #263244;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.keyExplanationPending,
+.keyEvidence {
+  color: #596678;
+  line-height: 1.6;
+}
+
+.keyExplanationPending {
+  margin: 10px 0;
+}
+
+.keyEvidence {
+  margin: 8px 0 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
