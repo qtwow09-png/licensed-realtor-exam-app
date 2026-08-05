@@ -132,6 +132,12 @@ for (const question of questions) {
 
   if (!Array.isArray(question.choices) || question.choices.length !== 5) {
     fail(`${question.id}: 보기가 5개가 아닙니다.`);
+  } else {
+    question.choices.forEach((choice, index) => {
+      if (!String(choice).trim()) {
+        fail(`${question.id}: ${index + 1}번 보기가 비어 있습니다.`);
+      }
+    });
   }
 
   if (!Number.isInteger(question.answer) || question.answer < 1 || question.answer > 5) {
