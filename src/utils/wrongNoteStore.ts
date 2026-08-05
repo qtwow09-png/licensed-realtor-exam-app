@@ -54,6 +54,13 @@ function canUseStorage(): boolean {
 
 function normalizeNote(note: WrongNote): WrongNote {
   const correctStreak = note.correctStreak ?? 0;
+  const attempts = Array.isArray(note.attempts)
+    ? note.attempts
+        .filter((attempt) => attempt.isCorrect || attempt.selectedChoice !== undefined)
+        .slice(-maxStoredAttempts)
+    : [];
+  const answeredWrongAttempts = attempts.filter((attempt) => !attempt.isCorrect && attempt.selectedChoice !== undefined);
+  const latestAnsweredWrongAttempt = [...answeredWrongAttempts].reverse()[0];
   const decorated = decorateQuestionPart({
     ...note,
     id: note.questionId,
@@ -69,9 +76,12 @@ function normalizeNote(note: WrongNote): WrongNote {
     ...note,
     examPart: note.examPart ?? decorated.examPart,
     topicPart: note.topicPart ?? decorated.topicPart,
-    wrongCount: Number.isFinite(note.wrongCount) ? note.wrongCount : 0,
+    wrongCount: note.lastSelectedChoice === undefined
+      ? answeredWrongAttempts.length
+      : (Number.isFinite(note.wrongCount) ? note.wrongCount : answeredWrongAttempts.length),
     correctCount: Number.isFinite(note.correctCount) ? note.correctCount : 0,
-    attempts: Array.isArray(note.attempts) ? note.attempts.slice(-maxStoredAttempts) : [],
+    lastSelectedChoice: note.lastSelectedChoice ?? latestAnsweredWrongAttempt?.selectedChoice,
+    attempts,
     correctStreak,
     status: note.status ?? (correctStreak >= masteryStreakTarget ? 'mastered' : 'active'),
   };
@@ -188,7 +198,7 @@ export function recordWrongNotes(score: ExamScore): void {
   const now = new Date().toISOString();
 
   score.questionResults.forEach((result) => {
-    if (!result.isCorrect && result.selectedChoice === undefined) {
+    if (result.selectedChoice === undefined) {
       return;
     }
 
