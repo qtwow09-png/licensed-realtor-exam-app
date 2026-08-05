@@ -1,13 +1,12 @@
 import { releasedExamQuestions } from '../data/releasedExamQuestions';
-import type { ChoiceNumber, ExamMode, Question, Subject, SubSubject } from '../types/exam';
-
-const registryTaxTargets: Record<SubSubject, number> = {
-  중개사법: 0,
-  공법: 0,
-  지적법: 12,
-  등기법: 12,
-  세법: 16,
-};
+import { decorateQuestionPart, targetPartsForSubject } from '../data/examPartBlueprints';
+import type { ChoiceNumber, ExamMode, Question, Subject } from '../types/exam';
+import {
+  assertQuestionBankReady,
+  legacyRounds,
+  recentQuestionRatio,
+  recentRounds,
+} from './questionBankIntegrity';
 
 function randomIndex(max: number): number {
   if (max <= 0) {
@@ -86,21 +85,68 @@ function balancedSample(pool: Question[], targetCount: number): Question[] {
   return selected.slice(0, targetCount);
 }
 
-function takeSubjectQuestions(subject: Subject): Question[] {
-  const subjectQuestions = releasedExamQuestions.filter((question) => question.subject === subject);
+function takeRatioSample(pool: Question[], targetCount: number): Question[] {
+  const verifiedPool = pool.filter((question) => !question.needsReview);
+  const recentTarget = Math.round(targetCount * recentQuestionRatio);
+  const legacyTarget = targetCount - recentTarget;
+  const recentPool = verifiedPool.filter((question) => recentRounds.includes(question.sourceRound));
+  const legacyPool = verifiedPool.filter((question) => legacyRounds.includes(question.sourceRound));
 
-  if (subject === '공시세법') {
-    return (['지적법', '등기법', '세법'] as SubSubject[]).flatMap((subSubject) => (
-      shuffle(
-        balancedSample(
-          subjectQuestions.filter((question) => question.subSubject === subSubject),
-          registryTaxTargets[subSubject],
-        ),
-      )
-    ));
+  return [
+    ...balancedSample(recentPool, recentTarget),
+    ...balancedSample(legacyPool, legacyTarget),
+  ];
+}
+
+function takeTopicBalancedSample(pool: Question[], targetCount: number): Question[] {
+  const selected: Question[] = [];
+  const selectedIds = new Set<string>();
+  const topicCounts = new Map<string, number>();
+  const shuffledPool = shuffle(pool);
+
+  shuffledPool.forEach((question) => {
+    const topicPart = question.topicPart ?? question.topic;
+    const topicCount = topicCounts.get(topicPart) ?? 0;
+
+    if (selected.length >= targetCount || topicCount >= 2) {
+      return;
+    }
+
+    selected.push(question);
+    selectedIds.add(question.id);
+    topicCounts.set(topicPart, topicCount + 1);
+  });
+
+  if (selected.length < targetCount) {
+    shuffledPool
+      .filter((question) => !selectedIds.has(question.id))
+      .slice(0, targetCount - selected.length)
+      .forEach((question) => selected.push(question));
   }
 
-  return shuffle(balancedSample(subjectQuestions, 40));
+  return selected.slice(0, targetCount);
+}
+
+function takeSubjectQuestions(subject: Subject): Question[] {
+  const subjectQuestions = releasedExamQuestions
+    .filter((question) => question.subject === subject)
+    .map(decorateQuestionPart);
+
+  const selectedByPart = targetPartsForSubject(subject).flatMap((part) => (
+    takeTopicBalancedSample(
+      takeRatioSample(
+        subjectQuestions.filter((question) => question.examPart === part.label),
+        part.targetCount,
+      ),
+      part.targetCount,
+    )
+  ));
+
+  if (subject === '공시세법') {
+    return selectedByPart;
+  }
+
+  return shuffle(selectedByPart);
 }
 
 function makeSessionQuestion(question: Question, index: number, displayStart: number): Question {
@@ -124,6 +170,8 @@ export function buildExamPaper(options: {
   mode: ExamMode;
   subjects: Subject[];
 }): Question[] {
+  assertQuestionBankReady(releasedExamQuestions, options.subjects);
+
   return options.subjects.flatMap((subject, subjectIndex) => {
     const startNumber = displayStartFor(options.mode, subject, subjectIndex);
     return takeSubjectQuestions(subject).map((question, index) => (

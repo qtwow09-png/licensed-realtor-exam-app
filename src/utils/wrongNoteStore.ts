@@ -1,3 +1,4 @@
+import { decorateQuestionPart } from '../data/examPartBlueprints';
 import type {
   ChoiceNumber,
   ExamScore,
@@ -38,15 +39,36 @@ export type WeakTopic = {
   questionCount: number;
 };
 
+export type WeakPartStat = {
+  subject: Subject;
+  part: string;
+  wrongCount: number;
+  correctCount: number;
+  totalAttempts: number;
+  wrongRate: number;
+};
+
 function canUseStorage(): boolean {
   return typeof window !== 'undefined' && Boolean(window.localStorage);
 }
 
 function normalizeNote(note: WrongNote): WrongNote {
   const correctStreak = note.correctStreak ?? 0;
+  const decorated = decorateQuestionPart({
+    ...note,
+    id: note.questionId,
+    sourceType: 'weak_review',
+    category: 'trap',
+    difficulty: 'hard',
+    frequencyScore: 0,
+    examNumber: 0,
+    displayNumber: 0,
+  });
 
   return {
     ...note,
+    examPart: note.examPart ?? decorated.examPart,
+    topicPart: note.topicPart ?? decorated.topicPart,
     wrongCount: Number.isFinite(note.wrongCount) ? note.wrongCount : 0,
     correctCount: Number.isFinite(note.correctCount) ? note.correctCount : 0,
     attempts: Array.isArray(note.attempts) ? note.attempts.slice(-maxStoredAttempts) : [],
@@ -115,13 +137,15 @@ function appendAttempt(
 }
 
 function noteFromResult(result: QuestionResult, now: string): WrongNote {
-  const question = result.question;
+  const question = decorateQuestionPart(result.question);
 
   return {
     questionId: stableQuestionId(question),
     subject: question.subject,
     chapter: question.chapter,
     topic: question.topic,
+    examPart: question.examPart,
+    topicPart: question.topicPart,
     lawRef: question.lawRef,
     questionText: question.questionText,
     choices: question.choices,
@@ -168,26 +192,29 @@ export function recordWrongNotes(score: ExamScore): void {
       return;
     }
 
-    const questionId = stableQuestionId(result.question);
+    const resultQuestion = decorateQuestionPart(result.question);
+    const questionId = stableQuestionId(resultQuestion);
     const existing = notes[questionId];
 
     if (!result.isCorrect) {
-      const nextNote = existing ?? noteFromResult(result, now);
+      const nextNote = existing ?? noteFromResult({ ...result, question: resultQuestion }, now);
       notes[questionId] = {
         ...nextNote,
-        questionText: result.question.questionText,
-        choices: result.question.choices,
-        answer: result.question.answer,
-        explanation: result.question.explanation,
-        explanationVerified: result.question.explanationVerified,
-        explanationSource: result.question.explanationSource,
-        lawUpdateNote: result.question.lawUpdateNote,
-        subSubject: result.question.subSubject,
-        originalSource: result.question.originalSource,
-        isLawUpdated: result.question.isLawUpdated,
-        lawUpdateDescription: result.question.lawUpdateDescription,
-        needsReview: result.question.needsReview,
-        sourceTitle: result.question.sourceTitle,
+        questionText: resultQuestion.questionText,
+        choices: resultQuestion.choices,
+        answer: resultQuestion.answer,
+        explanation: resultQuestion.explanation,
+        explanationVerified: resultQuestion.explanationVerified,
+        explanationSource: resultQuestion.explanationSource,
+        examPart: resultQuestion.examPart,
+        topicPart: resultQuestion.topicPart,
+        lawUpdateNote: resultQuestion.lawUpdateNote,
+        subSubject: resultQuestion.subSubject,
+        originalSource: resultQuestion.originalSource,
+        isLawUpdated: resultQuestion.isLawUpdated,
+        lawUpdateDescription: resultQuestion.lawUpdateDescription,
+        needsReview: resultQuestion.needsReview,
+        sourceTitle: resultQuestion.sourceTitle,
         wrongCount: (existing?.wrongCount ?? 0) + 1,
         correctStreak: 0,
         status: 'active',
@@ -284,6 +311,44 @@ export function getWeakTopics(limit = 5): WeakTopic[] {
     .slice(0, limit);
 }
 
+export function getWeakPartStats(limit = 8): WeakPartStat[] {
+  const grouped = new Map<string, WeakPartStat>();
+
+  getActiveWrongNotes().forEach((note) => {
+    const part = note.topicPart ?? note.examPart ?? note.topic;
+    const key = `${note.subject}::${part}`;
+    const previous = grouped.get(key) ?? {
+      subject: note.subject,
+      part,
+      wrongCount: 0,
+      correctCount: 0,
+      totalAttempts: 0,
+      wrongRate: 0,
+    };
+    const wrongCount = previous.wrongCount + note.wrongCount;
+    const correctCount = previous.correctCount + note.correctCount;
+    const totalAttempts = wrongCount + correctCount;
+
+    grouped.set(key, {
+      ...previous,
+      wrongCount,
+      correctCount,
+      totalAttempts,
+      wrongRate: totalAttempts > 0 ? Math.round((wrongCount / totalAttempts) * 100) : 0,
+    });
+  });
+
+  return Array.from(grouped.values())
+    .sort((left, right) => {
+      if (right.wrongRate !== left.wrongRate) {
+        return right.wrongRate - left.wrongRate;
+      }
+
+      return right.wrongCount - left.wrongCount;
+    })
+    .slice(0, limit);
+}
+
 export function buildWrongReviewQuestions(): Question[] {
   return getActiveWrongNotes()
     .slice(0, smartReviewLimit)
@@ -297,6 +362,8 @@ export function buildWrongReviewQuestions(): Question[] {
       displayNumber: index + 1,
       chapter: note.chapter,
       topic: note.topic,
+      examPart: note.examPart,
+      topicPart: note.topicPart,
       lawRef: note.lawRef,
       difficulty: note.wrongCount >= 3 ? 'trap' : 'hard',
       sourceType: 'weak_review',
@@ -329,4 +396,3 @@ export function resetStudyData(): void {
     .filter((key) => releasedRoundStoragePrefixes.some((prefix) => key.startsWith(prefix)))
     .forEach((key) => window.localStorage.removeItem(key));
 }
-

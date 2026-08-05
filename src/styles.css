@@ -107,6 +107,28 @@ button {
   font-weight: 900;
 }
 
+.setupError {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid #e7b49f;
+  border-radius: 8px;
+  background: #fff7f3;
+  color: #7d2f1d;
+}
+
+.setupError strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.setupError p {
+  margin: 0;
+  color: #7d2f1d;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
 .modeCard {
   min-height: 188px;
   padding: 22px;
@@ -224,6 +246,10 @@ button {
   margin-top: 34px;
 }
 
+.weakPartSection {
+  margin-top: 26px;
+}
+
 .sectionHeader {
   margin-bottom: 16px;
 }
@@ -298,6 +324,69 @@ button {
   color: #1f6f4a;
   font-style: normal;
   font-weight: 900;
+}
+
+.weakEmptyState,
+.weakChartList {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.weakEmptyState {
+  padding: 20px;
+  color: #647084;
+}
+
+.weakChartList {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.weakChartRow {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(260px, 420px) 48px;
+  gap: 14px;
+  align-items: center;
+}
+
+.weakChartRow strong,
+.weakChartRow span,
+.weakChartRow em {
+  display: block;
+}
+
+.weakChartRow strong {
+  color: #253044;
+  font-size: 15px;
+}
+
+.weakChartRow span {
+  margin-top: 3px;
+  color: #647084;
+  font-size: 13px;
+}
+
+.weakChartRow em {
+  color: #c94929;
+  font-style: normal;
+  font-weight: 900;
+  text-align: right;
+}
+
+.weakBarTrack {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf1f5;
+}
+
+.weakBarTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #c94929;
 }
 
 .numericGroup {
@@ -1002,6 +1091,34 @@ button {
   margin: 0;
   color: #263244;
   line-height: 1.55;
+}
+
+.wrongFeedback {
+  margin: 12px 0 0;
+  padding: 11px 12px;
+  border: 1px solid #d6e4dc;
+  border-radius: 8px;
+  background: #f4faf7;
+}
+
+.wrongFeedback strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #1f6f4a;
+  font-size: 13px;
+}
+
+.wrongFeedback p {
+  margin: 0;
+  color: #263244;
+  line-height: 1.55;
+}
+
+.partMeta {
+  margin: 8px 0 0;
+  color: #2f7d57;
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .explanation {

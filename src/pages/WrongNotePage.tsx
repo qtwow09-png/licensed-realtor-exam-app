@@ -28,6 +28,30 @@ function choiceText(note: WrongNote, choice?: number): string {
   return note.choices[choice - 1] ?? '선택지 확인 필요';
 }
 
+function compactText(value: string, maxLength: number): string {
+  const normalizedValue = value.replace(/\s+/g, ' ').trim();
+
+  if (normalizedValue.length <= maxLength) {
+    return normalizedValue;
+  }
+
+  return `${normalizedValue.slice(0, maxLength - 1)}…`;
+}
+
+function wrongFeedback(note: WrongNote): string {
+  const selectedText = choiceText(note, note.lastSelectedChoice);
+  const answerText = choiceText(note, note.answer);
+
+  if (!note.lastSelectedChoice) {
+    return compactText(`미응답 문항입니다. 정답은 ${choiceLabels[note.answer]}번으로, 핵심 근거는 "${answerText}"입니다.`, 200);
+  }
+
+  return compactText(
+    `오답 선택은 "${selectedText}"의 일부 표현을 맞는 요건으로 본 가능성이 큽니다. 정답은 ${choiceLabels[note.answer]}번, "${answerText}"가 법령상 기준에 맞습니다.`,
+    200,
+  );
+}
+
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat('ko-KR', {
     month: '2-digit',
@@ -85,7 +109,7 @@ function WrongNoteItem({ note }: { note: WrongNote }) {
       <summary className="wrongNoteHead">
         <div>
           <strong>{note.topic}</strong>
-          <span>{note.chapter} · 제{note.sourceRound}회 기반</span>
+          <span>{note.chapter} · {note.examPart ?? note.subSubject} · 제{note.sourceRound}회 기반</span>
         </div>
         <div className="wrongNoteStats">
           <span>{mastered ? '완료' : `오답 ${note.wrongCount}회`}</span>
@@ -95,6 +119,7 @@ function WrongNoteItem({ note }: { note: WrongNote }) {
       </summary>
       <div className="wrongNoteBody">
         <p className="wrongQuestionText">{note.questionText}</p>
+        {note.topicPart && <p className="partMeta">{note.topicPart}</p>}
         {note.lawRef && <p className="lawRef">{note.lawRef}</p>}
         <div className="wrongChoiceCompare">
           <div>
@@ -106,7 +131,11 @@ function WrongNoteItem({ note }: { note: WrongNote }) {
             <p>{choiceText(note, note.answer)}</p>
           </div>
         </div>
-        <p className="explanation">{note.explanation}</p>
+        <div className="wrongFeedback">
+          <strong>짧은 해설</strong>
+          <p>{wrongFeedback(note)}</p>
+        </div>
+        {note.explanation && <p className="explanation">{note.explanation}</p>}
       </div>
     </details>
   );
@@ -128,6 +157,7 @@ function KeyMemoryItem({ note }: { note: WrongNote }) {
       </summary>
       <div className="wrongNoteBody">
         <p className="wrongQuestionText">{note.questionText}</p>
+        {note.topicPart && <p className="partMeta">{note.topicPart}</p>}
         <ol className="keyChoiceList">
           {note.choices.map((choice, index) => (
             <li className={index + 1 === note.answer ? 'correct' : ''} key={`${note.questionId}-${index}`}>

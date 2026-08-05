@@ -7,6 +7,7 @@ import { ResultPage } from './pages/ResultPage';
 import { WrongNotePage } from './pages/WrongNotePage';
 import { createExamSession, createWrongReviewSession, setAnswer } from './store/examStore';
 import type { ChoiceNumber, ExamMode, ExamScore, ExamSession } from './types/exam';
+import { QuestionBankIntegrityError } from './utils/questionBankIntegrity';
 import { scoreExam } from './utils/scoring';
 import { getWrongNoteCount, recordWrongNotes, resetStudyData } from './utils/wrongNoteStore';
 
@@ -18,6 +19,7 @@ export default function App() {
   const [selectedNumericSubject, setSelectedNumericSubject] = useState<NumericMemorySubject['subject']>('중개사법');
   const [session, setSession] = useState<ExamSession | null>(null);
   const [result, setResult] = useState<ExamScore | null>(null);
+  const [setupError, setSetupError] = useState<string | null>(null);
   const [wrongNoteCount, setWrongNoteCount] = useState(() => getWrongNoteCount());
 
   const currentResult = useMemo(() => {
@@ -33,10 +35,24 @@ export default function App() {
   }, [result, session]);
 
   function startExam() {
-    const nextSession = createExamSession(selectedMode);
-    setSession(nextSession);
-    setResult(null);
-    setPage('exam');
+    try {
+      const nextSession = createExamSession(selectedMode);
+      setSetupError(null);
+      setSession(nextSession);
+      setResult(null);
+      setPage('exam');
+    } catch (error) {
+      if (error instanceof QuestionBankIntegrityError) {
+        setSetupError([
+          '출제 전 역검증에서 중단되었습니다.',
+          ...error.report.errors.slice(0, 6),
+          error.report.errors.length > 6 ? `외 ${error.report.errors.length - 6}건` : '',
+        ].filter(Boolean).join('\n'));
+        return;
+      }
+
+      throw error;
+    }
   }
 
   function submitExam() {
@@ -178,6 +194,7 @@ export default function App() {
         selectedMode={selectedMode}
         onSelectMode={setSelectedMode}
         onStart={startExam}
+        setupError={setupError}
         wrongNoteCount={wrongNoteCount}
         onStartWrongReview={startWrongReview}
         onOpenWrongNotes={() => setPage('wrongNotes')}

@@ -2,12 +2,14 @@ import { BookOpenCheck, ClipboardList, Landmark, NotebookTabs, Play, RefreshCcw,
 import { numericMemoryCoverage, numericMemorySubjects, type NumericMemorySubject } from '../data/numericMemoryCodes';
 import { examConfigs } from '../store/examStore';
 import type { ExamMode } from '../types/exam';
+import { getWeakPartStats } from '../utils/wrongNoteStore';
 
 type ExamSetupPageProps = {
   selectedMode: ExamMode;
   onSelectMode: (mode: ExamMode) => void;
   onStart: () => void;
   wrongNoteCount: number;
+  setupError?: string | null;
   onStartWrongReview: () => void;
   onOpenWrongNotes: () => void;
   onResetProgress: () => void;
@@ -26,11 +28,14 @@ export function ExamSetupPage({
   onSelectMode,
   onStart,
   wrongNoteCount,
+  setupError,
   onStartWrongReview,
   onOpenWrongNotes,
   onResetProgress,
   onOpenNumericMemory,
 }: ExamSetupPageProps) {
+  const weakPartStats = getWeakPartStats();
+
   return (
     <main className="setupPage">
       <section className="setupIntro">
@@ -40,8 +45,8 @@ export function ExamSetupPage({
       </section>
       <section className="roundPicker" aria-label="혼합 출제 기준">
         <div>
-          <strong>20~36회 혼합</strong>
-          <span>한 회차 40문항 고정 없이 실제 기출 풀에서 과목별로 섞어 출제합니다.</span>
+          <strong>30~36회 70% + 20~29회 30%</strong>
+          <span>공식 PDF 원문·최종정답 검증을 통과한 실제 기출만 출제합니다.</span>
         </div>
         <div className="roundRuleGroup">
           <span>문항 랜덤</span>
@@ -66,11 +71,17 @@ export function ExamSetupPage({
               <Icon size={24} />
               <strong>{config.title}</strong>
               <span>{config.subjects.join(' + ')}</span>
-              <em>{config.durationMinutes}분 · {config.subjects.length * 40}문항 · 20~36회 혼합</em>
+              <em>{config.durationMinutes}분 · {config.subjects.length * 40}문항 · 70:30 검증 혼합</em>
             </button>
           );
         })}
       </section>
+      {setupError && (
+        <section className="setupError" role="alert">
+          <strong>시험 시작 보류</strong>
+          <p>{setupError}</p>
+        </section>
+      )}
       <button className="startButton" type="button" onClick={onStart}>
         <Play size={20} />
         시험 시작
@@ -113,6 +124,33 @@ export function ExamSetupPage({
             </button>
           ))}
         </div>
+      </section>
+      <section className="weakPartSection" aria-label="취약파트 오답률">
+        <div className="sectionHeader">
+          <p className="eyebrow">오답률</p>
+          <h2>자주 틀리는 취약파트</h2>
+          <p>오답노트에 쌓인 기록을 기준으로 세부주제별 오답률을 보여줍니다.</p>
+        </div>
+        {weakPartStats.length === 0 ? (
+          <div className="weakEmptyState">
+            시험 제출 후 틀린 문제가 저장되면 취약파트 그래프가 표시됩니다.
+          </div>
+        ) : (
+          <div className="weakChartList">
+            {weakPartStats.map((stat) => (
+              <div className="weakChartRow" key={`${stat.subject}-${stat.part}`}>
+                <div>
+                  <strong>{stat.part}</strong>
+                  <span>{stat.subject} · 오답 {stat.wrongCount}회 · 정답복습 {stat.correctCount}회</span>
+                </div>
+                <div className="weakBarTrack" aria-label={`${stat.part} 오답률 ${stat.wrongRate}%`}>
+                  <span style={{ width: `${stat.wrongRate}%` }} />
+                </div>
+                <em>{stat.wrongRate}%</em>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );

@@ -41,6 +41,12 @@ export function ResultPage({ score, onRestart, onOpenWrongNotes }: ResultPagePro
             {result.question.subSubject && (
               <p className="lawUpdateNote">{result.question.sourceTitle} · {result.question.subSubject}</p>
             )}
+            {(result.question.examPart || result.question.topicPart) && (
+              <p className="partMeta">
+                {result.question.examPart}
+                {result.question.topicPart && ` · ${result.question.topicPart}`}
+              </p>
+            )}
             <p>{result.question.questionText}</p>
             {result.question.lawUpdateNote && (
               <p className="lawUpdateNote">{result.question.lawUpdateNote}</p>

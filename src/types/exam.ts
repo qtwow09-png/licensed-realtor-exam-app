@@ -32,6 +32,8 @@ export type Question = {
   displayNumber: number;
   chapter: string;
   topic: string;
+  examPart?: string;
+  topicPart?: string;
   lawRef?: string;
   difficulty: Difficulty;
   sourceType: SourceType;
@@ -122,6 +124,8 @@ export type WrongNote = {
   subject: Subject;
   chapter: string;
   topic: string;
+  examPart?: string;
+  topicPart?: string;
   lawRef?: string;
   questionText: string;
   choices: [string, string, string, string, string];

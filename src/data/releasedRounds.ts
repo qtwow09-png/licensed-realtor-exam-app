@@ -19,7 +19,7 @@ export const mixedReleasedRoundMeta: ReleasedRoundMeta = {
   title: '제20~36회 실제 기출 혼합',
   sourceUrl: qnetQuestionUrl,
   lawBasis: '기출 원문 기준, 현행법 보정 문항은 별도 표시',
-  note: '제20~36회 실제 기출만 사용하되 회차, 문항 순서, 보기 순서를 섞어 출제합니다.',
+  note: '검증된 실제 기출만 사용하되 회차, 문항 순서, 보기 순서를 섞어 출제합니다.',
 };
 
 export function firstReleasedRound(): ReleasedRoundMeta {
